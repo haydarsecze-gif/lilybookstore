@@ -90,8 +90,35 @@
   }
 
   .books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .community-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
+
+  .chat-panel, .request-panel {
+    height: auto !important;
+    min-height: 400px;
+    padding: 1.25rem;
+  }
+
+  .preorder-card {
+    grid-template-columns: 1fr !important;
     gap: 1.5rem;
+    text-align: center;
+    padding: 1.25rem;
+  }
+
+  .preorder-cover-wrapper {
+    margin-inline: auto;
+  }
+
+  .preorder-retailers {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem;
   }
 
   .library-controls {
@@ -194,7 +221,35 @@
 
 @media (max-width: 480px) {
   .books-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .book-card {
+    padding: 0.75rem;
+    border-radius: var(--border-radius-md);
+  }
+
+  .book-card-title {
+    font-size: 1.02rem;
+  }
+
+  .book-card-price {
+    font-size: 1rem;
+  }
+
+  .book-card-meta {
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-card {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .book-detail-cover, .book-detail-cover-placeholder {
+    height: 220px !important;
+    width: 146px !important;
   }
 
   .slide-cover-stack {
@@ -204,5 +259,10 @@
 
   .slide-title {
     font-size: 2.1rem;
+  }
+
+  .chat-bubble-header {
+    gap: 0.5rem !important;
+    font-size: 0.72rem !important;
   }
 }
