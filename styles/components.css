@@ -784,6 +784,9 @@
 }
 
 .book-detail-cover {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
   border-radius: var(--border-radius-md);
   box-shadow: 0 10px 25px var(--color-brown-alpha-90);
 }
@@ -1390,7 +1393,7 @@
 
 .book-detail-cover-placeholder {
   width: 100%;
-  aspect-ratio: 2 / 3;
+  height: 270px;
   border-radius: var(--border-radius-md);
   box-shadow: 0 10px 25px var(--color-brown-alpha-90);
   background: linear-gradient(135deg, var(--color-teal) 0%, var(--color-brown) 100%);
@@ -1789,6 +1792,8 @@
 }
 
 .order-status-badge {
+  display: inline-block;
+  white-space: nowrap;
   background-color: rgba(2, 70, 68, 0.45);
   color: var(--color-sand);
   padding: 0.15rem 0.6rem;
@@ -2045,5 +2050,128 @@
     border: none;
   }
 }
+
+/* ==========================================
+   REVIEW MEMBER TIERS & VERIFIED BADGES
+   ========================================== */
+.reviewer-tier-badge {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--border-radius-pill);
+  border: 1px solid transparent;
+  margin-left: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.reviewer-tier-badge.bronze {
+  background: rgba(181, 131, 141, 0.15);
+  border-color: rgba(181, 131, 141, 0.4);
+  color: #b5838d;
+}
+
+.reviewer-tier-badge.silver {
+  background: rgba(231, 215, 193, 0.15);
+  border-color: rgba(231, 215, 193, 0.4);
+  color: #e7d7c1;
+}
+
+.reviewer-tier-badge.gold {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.4);
+  color: #ffd700;
+  box-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
+}
+
+.verified-buyer-badge {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  background-color: rgba(2, 70, 68, 0.35);
+  border: 1px solid rgba(2, 70, 68, 0.65);
+  color: var(--color-sand);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--border-radius-pill);
+  margin-left: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.community-reviewer-badge {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  background-color: rgba(231, 215, 193, 0.05);
+  border: 1px solid rgba(231, 215, 193, 0.2);
+  color: var(--text-muted);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--border-radius-pill);
+  margin-left: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Add Review Form Styles */
+.add-review-form {
+  background-color: rgba(231, 215, 193, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.add-review-title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--color-sand);
+  margin: 0;
+}
+
+.rating-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.star-rating-input {
+  display: inline-flex;
+  gap: 0.25rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.star-btn {
+  transition: transform 0.1s ease;
+}
+
+.star-btn:hover {
+  transform: scale(1.2);
+}
+
+.review-textarea {
+  width: 100%;
+  min-height: 80px;
+  background-color: rgba(2, 70, 68, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-sand);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.75rem;
+  resize: vertical;
+  outline: none;
+}
+
+.review-textarea:focus {
+  border-color: var(--accent-color);
+}
+
 
 

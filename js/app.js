@@ -69,6 +69,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const savedUser = localStorage.getItem("lily_user");
       if (savedUser) currentUser = JSON.parse(savedUser);
+
+      // Load custom reviews overlay
+      const savedReviews = localStorage.getItem("lily_book_reviews");
+      if (savedReviews) {
+        const customReviews = JSON.parse(savedReviews);
+        Object.keys(customReviews).forEach(bookId => {
+          const book = books.find(b => b.id === bookId);
+          if (book) {
+            book.reviews = customReviews[bookId];
+          }
+        });
+      }
     } catch (e) {
       console.error("Error loading localStorage", e);
     }
@@ -1792,25 +1804,78 @@ document.addEventListener("DOMContentLoaded", () => {
     const book = books.find(b => b.id === bookId);
     if (!book) return;
 
+    const hasPurchasedBook = (username, bookTitle) => {
+      const user = currentUser && currentUser.username === username ? currentUser : null;
+      if (!user || !user.orders) return false;
+      const baseTitle = bookTitle.toLowerCase().trim();
+      return user.orders.some(order => 
+        order.items.some(item => {
+          const itemTitle = item.title.toLowerCase();
+          return itemTitle.includes(baseTitle);
+        })
+      );
+    };
+
     const isPreOrder = book.category === "New Arrivals" || book.publishedYear >= 2026;
 
     const defaultReviews = [
-      { reviewer: "Sarah K.", rating: 5, comment: "Absolutely loved the pace and chemistry! A fantastic read." },
-      { reviewer: "Michael D.", rating: 4, comment: "Great character development and very engaging style." }
+      { reviewer: "Sarah K.", rating: 5, comment: "Absolutely loved the pace and chemistry! A fantastic read.", tier: "Silver Member", isVerified: true },
+      { reviewer: "Michael D.", rating: 4, comment: "Great character development and very engaging style.", tier: "Bronze Reader", isVerified: false }
     ];
     const reviewsToRender = book.reviews || defaultReviews;
     let reviewsHtml = "";
     reviewsToRender.forEach(rev => {
+      const userTier = rev.tier || "Bronze Reader";
+      const tierClass = userTier.toLowerCase().replace(" ", "-");
+      const verified = (typeof rev.isVerified !== 'undefined')
+        ? rev.isVerified
+        : hasPurchasedBook(rev.reviewer, book.title);
+        
+      const verifiedBadgeHtml = verified
+        ? `<span class="verified-buyer-badge">✓ Verified Buyer</span>`
+        : `<span class="community-reviewer-badge">Community Reviewer</span>`;
+        
       reviewsHtml += `
-        <div class="review-item">
-          <div class="review-header">
-            <span class="reviewer-name">${rev.reviewer}</span>
-            <span class="review-rating">${'★'.repeat(rev.rating)}${'☆'.repeat(5 - rev.rating)}</span>
+        <div class="review-item" style="margin-bottom: 0.75rem;">
+          <div class="review-header" style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+              <span class="reviewer-name" style="font-weight: 700;">${rev.reviewer}</span>
+              <span class="reviewer-tier-badge ${tierClass}">${userTier}</span>
+              ${verifiedBadgeHtml}
+            </div>
+            <span class="review-rating" style="color: var(--accent-color); font-size: 0.85rem;">${'★'.repeat(rev.rating)}${'☆'.repeat(5 - rev.rating)}</span>
           </div>
-          <p class="review-comment">"${rev.comment}"</p>
+          <p class="review-comment" style="font-size: 0.9rem; color: var(--color-sand-alpha-80); margin-top: 0.35rem; line-height: 1.4; font-style: italic;">"${rev.comment}"</p>
         </div>
       `;
     });
+
+    let reviewFormHtml = "";
+    if (currentUser) {
+      reviewFormHtml = `
+        <div class="add-review-form">
+          <h4 class="add-review-title">Write a Review</h4>
+          <div class="rating-input-row">
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Your Rating:</span>
+            <div class="star-rating-input" id="star-rating-selector">
+              <span class="star-btn" data-value="1" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+              <span class="star-btn" data-value="2" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+              <span class="star-btn" data-value="3" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+              <span class="star-btn" data-value="4" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+              <span class="star-btn" data-value="5" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+            </div>
+          </div>
+          <textarea class="review-textarea" id="review-comment-input" required placeholder="Write your review and share your reading experience with the community..."></textarea>
+          <button class="btn-primary" id="btn-submit-review" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: var(--border-radius-pill); cursor: pointer; align-self: flex-start; margin-top: 0.25rem;">Submit Review</button>
+        </div>
+      `;
+    } else {
+      reviewFormHtml = `
+        <div style="background: rgba(231, 215, 193, 0.03); border: 1px dashed var(--glass-border); border-radius: var(--border-radius-md); padding: 1.25rem; text-align: center; margin-bottom: 1.5rem;">
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Please <a href="#profile" id="link-modal-login" style="color: var(--accent-color); font-weight: 700; text-decoration: underline;">log in or register</a> to comment and rate this book.</span>
+        </div>
+      `;
+    }
 
     bookDialog.innerHTML = `
       <div class="dialog-modal-content">
@@ -1827,7 +1892,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="book-card-price" style="font-size: 1.4rem;">$${book.price.toFixed(2)}</span>
             </div>
             <p class="book-detail-desc">${book.description}</p>
-            <div style="display: flex; gap: 1rem; margin-top: auto; padding-top: 1rem;">
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
               ${isPreOrder ? `
                 <button class="btn-primary btn-modal-preorder" data-id="${book.id}">
                   Pre-Order
@@ -1843,6 +1908,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div class="book-reviews-section">
           <h3 class="book-reviews-title">Reader Reviews</h3>
+          ${reviewFormHtml}
           <div class="reviews-list">
             ${reviewsHtml}
           </div>
@@ -1852,6 +1918,90 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bookDialog.querySelector(".dialog-close-btn").addEventListener("click", () => bookDialog.close());
     
+    const loginLink = bookDialog.querySelector("#link-modal-login");
+    if (loginLink) {
+      loginLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        bookDialog.close();
+        authTab = "login";
+        navigateTo("profile");
+      });
+    }
+
+    if (currentUser) {
+      let selectedRating = 5;
+      const stars = bookDialog.querySelectorAll(".star-btn");
+      
+      const updateStarDisplay = (val) => {
+        stars.forEach(s => {
+          const v = parseInt(s.dataset.value);
+          if (v <= val) {
+            s.textContent = "★";
+            s.style.color = "var(--accent-color)";
+          } else {
+            s.textContent = "☆";
+            s.style.color = "var(--text-muted)";
+          }
+        });
+      };
+      
+      updateStarDisplay(selectedRating);
+      
+      stars.forEach(s => {
+        s.addEventListener("click", () => {
+          selectedRating = parseInt(s.dataset.value);
+          updateStarDisplay(selectedRating);
+        });
+        s.addEventListener("mouseover", () => {
+          updateStarDisplay(parseInt(s.dataset.value));
+        });
+        s.addEventListener("mouseout", () => {
+          updateStarDisplay(selectedRating);
+        });
+      });
+      
+      const btnSubmit = bookDialog.querySelector("#btn-submit-review");
+      const commentInput = bookDialog.querySelector("#review-comment-input");
+      
+      if (btnSubmit) {
+        btnSubmit.addEventListener("click", () => {
+          const commentVal = commentInput.value.trim();
+          if (!commentVal) {
+            showToast("Please enter a review comment", "error");
+            return;
+          }
+          
+          const userSpent = calculateTotalSpent(currentUser);
+          const userTier = getMemberTier(userSpent);
+          const verified = hasPurchasedBook(currentUser.username, book.title);
+          
+          if (!book.reviews) book.reviews = [];
+          
+          book.reviews.unshift({
+            reviewer: currentUser.username,
+            rating: selectedRating,
+            comment: commentVal,
+            tier: userTier.name,
+            isVerified: verified
+          });
+          
+          const savedReviews = localStorage.getItem("lily_book_reviews");
+          const customReviews = savedReviews ? JSON.parse(savedReviews) : {};
+          customReviews[book.id] = book.reviews;
+          localStorage.setItem("lily_book_reviews", JSON.stringify(customReviews));
+          
+          if (currentTab === "browse") {
+            renderBrowseView();
+          } else if (currentTab === "home") {
+            renderHomeView();
+          }
+          
+          showToast("Review submitted successfully!", "success");
+          showBookDetail(book.id);
+        });
+      }
+    }
+
     if (isPreOrder) {
       bookDialog.querySelector(".btn-modal-preorder").addEventListener("click", () => {
         addToCart(book.id, true);
