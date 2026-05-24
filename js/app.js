@@ -138,6 +138,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // --- ROUTING / VIEW CONTROLLER ---
+  const updateNavIndicator = () => {
+    const activeLink = document.querySelector(`.nav-link[data-tab="${currentTab}"]`);
+    const indicator = document.querySelector(".nav-indicator");
+    const navLinksContainer = document.querySelector(".nav-links");
+    
+    if (window.innerWidth > 768 && activeLink && indicator && navLinksContainer) {
+      indicator.style.display = "block";
+      const rect = activeLink.getBoundingClientRect();
+      const parentRect = navLinksContainer.getBoundingClientRect();
+      
+      indicator.style.left = `${rect.left - parentRect.left}px`;
+      indicator.style.width = `${rect.width}px`;
+      indicator.style.top = `${rect.top - parentRect.top}px`;
+      indicator.style.height = `${rect.height}px`;
+    } else if (indicator) {
+      indicator.style.display = "none";
+    }
+  };
+
   const navigateTo = (tabName) => {
     currentTab = tabName;
     
@@ -175,6 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (tabName === "profile") {
       renderProfileView();
     }
+
+    // Update sliding indicator position
+    setTimeout(updateNavIndicator, 50);
   };
 
   // Handle Navbar clicks
@@ -2196,6 +2218,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCart();
   updateCartCount();
   navigateTo("home");
+
+  window.addEventListener("resize", updateNavIndicator);
 
 
 
