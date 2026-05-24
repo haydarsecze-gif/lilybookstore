@@ -3,7 +3,7 @@
    ========================================== */
 .hero-slider-section {
   position: relative;
-  min-height: 80dvb;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   background-color: var(--bg-primary);
@@ -2176,46 +2176,58 @@
 
 /* Stock Badge Styles */
 .stock-badge {
-  font-size: 0.8rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--border-radius-sm);
-  font-weight: 500;
-  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   margin-top: 0.35rem;
-  width: max-content;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 .stock-badge.in-stock {
-  background-color: rgba(100, 180, 100, 0.15);
-  color: #8ce99a;
-  border: 1px solid rgba(100, 180, 100, 0.3);
+  color: #8ce99a !important;
 }
 
 .stock-badge.out-of-stock {
-  background-color: rgba(220, 100, 100, 0.15);
-  color: #ff8787;
-  border: 1px solid rgba(220, 100, 100, 0.3);
+  color: #ff8787 !important;
+}
+
+.stock-badge::before {
+  content: '●';
+  font-size: 0.65rem;
 }
 
 .detail-stock-badge {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   padding: 0.25rem 0.75rem;
   border-radius: var(--border-radius-pill);
-  font-weight: 600;
-  display: inline-block;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
   margin-left: auto;
 }
 
 .detail-stock-badge.in-stock {
-  background-color: rgba(100, 180, 100, 0.15);
   color: #8ce99a;
-  border: 1px solid rgba(100, 180, 100, 0.3);
+  border-color: rgba(140, 233, 154, 0.3);
+  background-color: rgba(140, 233, 154, 0.05);
 }
 
 .detail-stock-badge.out-of-stock {
-  background-color: rgba(220, 100, 100, 0.15);
   color: #ff8787;
-  border: 1px solid rgba(220, 100, 100, 0.3);
+  border-color: rgba(255, 135, 135, 0.3);
+  background-color: rgba(255, 135, 135, 0.05);
+}
+
+.detail-stock-badge::before {
+  content: '●';
+  font-size: 0.7rem;
 }
 
 /* Disabled buttons styling */
@@ -2256,6 +2268,105 @@
 
 .slider-bg-blur-image.active {
   opacity: 1;
+}
+
+/* Order History Status & Tracking Stepper */
+.order-status-badge.pre-order {
+  background-color: rgba(231, 215, 193, 0.1) !important;
+  color: var(--color-sand) !important;
+  border: 1px solid rgba(231, 215, 193, 0.25) !important;
+}
+
+.order-status-badge.processing {
+  background-color: rgba(224, 130, 68, 0.1) !important;
+  color: #ffa268 !important;
+  border: 1px solid rgba(224, 130, 68, 0.25) !important;
+}
+
+.order-status-badge.transit {
+  background-color: rgba(68, 160, 224, 0.1) !important;
+  color: #7bc5ff !important;
+  border: 1px solid rgba(68, 160, 224, 0.25) !important;
+}
+
+.order-status-badge.delivered {
+  background-color: rgba(100, 180, 100, 0.1) !important;
+  color: #8ce99a !important;
+  border: 1px solid rgba(100, 180, 100, 0.25) !important;
+}
+
+.order-tracking-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding: 0.5rem 0;
+  position: relative;
+}
+
+.order-tracking-stepper::before {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--glass-border);
+  z-index: 1;
+}
+
+.order-tracking-stepper .step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.order-tracking-stepper .step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.order-tracking-stepper .step.completed .step-dot {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 6px var(--accent-color);
+}
+
+.order-tracking-stepper .step.active .step-dot {
+  background-color: var(--color-sand);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+  animation: pulse-step-active 1.5s infinite alternate;
+}
+
+.order-tracking-stepper .step-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  font-weight: 500;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.order-tracking-stepper .step.completed .step-label {
+  color: var(--color-sand);
+}
+
+.order-tracking-stepper .step.active .step-label {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+@keyframes pulse-step-active {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.25); }
 }
 
 

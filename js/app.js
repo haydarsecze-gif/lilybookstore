@@ -123,6 +123,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  
+  const getCoverUrl = (cover) => {
+    if (!cover) return "";
+    if (cover.includes("openlibrary.org") && !cover.includes("?default=")) {
+      return `${cover}?default=false`;
+    }
+    return cover;
+  };
+
   const floatingCart = document.getElementById("floating-cart");
   const toastContainer = document.getElementById("toast-container");
 
@@ -223,9 +232,13 @@ document.addEventListener("DOMContentLoaded", () => {
     upcomingBooks.forEach((book, idx) => {
       const isPreOrder = book.category === "New Arrivals" || book.publishedYear >= 2026;
       const coverStackHtml = book.cover 
-        ? `<img src="${book.cover}" referrerpolicy="no-referrer" class="slide-cover-bg" alt="" />
-           <img src="${book.cover}" referrerpolicy="no-referrer" onerror="this.closest('.slide-cover-stack').innerHTML='<div class=&quot;book-detail-cover-placeholder&quot; style=&quot;width: 260px; height: 380px; display: flex;&quot;><div class=&quot;book-card-no-cover-title&quot; style=&quot;font-size: 1.5rem; margin-bottom: 1rem;&quot;>${book.title.replace(/'/g, "\\'")}</div><div class=&quot;book-card-no-cover-author&quot; style=&quot;font-size: 1rem;&quot;>by ${book.author.replace(/'/g, "\\'")}</div></div>';" class="slide-cover-main" alt="${book.title} Cover" />`
-        : `<div class="book-detail-cover-placeholder" style="width: 260px; height: 380px;">
+        ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none';" class="slide-cover-bg" alt="" />
+           <img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="slide-cover-main" alt="${book.title} Cover" />
+           <div class="book-detail-cover-placeholder" style="display: none; width: 260px; height: 380px; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+             <div class="book-card-no-cover-title" style="font-size: 1.5rem; margin-bottom: 1rem;">${book.title}</div>
+             <div class="book-card-no-cover-author" style="font-size: 1rem;">by ${book.author}</div>
+           </div>`
+        : `<div class="book-detail-cover-placeholder" style="width: 260px; height: 380px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
              <div class="book-card-no-cover-title" style="font-size: 1.5rem; margin-bottom: 1rem;">${book.title}</div>
              <div class="book-card-no-cover-author" style="font-size: 1rem;">by ${book.author}</div>
            </div>`;
@@ -404,8 +417,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       filteredPreorders.forEach(book => {
         const coverHtml = book.cover 
-          ? `<img src="${book.cover}" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=&quot;book-card-no-cover&quot; style=&quot;height: 100%; display: flex;&quot;><span class=&quot;book-card-no-cover-title&quot; style=&quot;font-size: 1.1rem;&quot;>${book.title.replace(/'/g, "\\'")}</span><span class=&quot;book-card-no-cover-author&quot;>by ${book.author.replace(/'/g, "\\'")}</span></div>';" class="preorder-cover" alt="${book.title} Cover" />`
-          : `<div class="book-card-no-cover" style="height: 100%;">
+          ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="preorder-cover" alt="${book.title} Cover" />
+             <div class="book-card-no-cover" style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+               <span class="book-card-no-cover-title" style="font-size: 1.1rem;">${book.title}</span>
+               <span class="book-card-no-cover-author">by ${book.author}</span>
+             </div>`
+          : `<div class="book-card-no-cover" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
               <span class="book-card-no-cover-title" style="font-size: 1.1rem;">${book.title}</span>
               <span class="book-card-no-cover-author">by ${book.author}</span>
              </div>`;
@@ -1146,18 +1163,81 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       orders.forEach(order => {
         let itemsListStr = order.items.map(it => `${it.title} (${it.qty})`).join(", ");
+        
+        const orderTime = parseInt(order.id.replace('ord-', '')) || 0;
+        const now = Date.now();
+        const elapsed = now - orderTime;
+
+        let activeStep = 1;
+        let statusText = "";
+        let badgeClass = "";
+        
+        if (order.isPreOrder) {
+          badgeClass = "pre-order";
+          if (elapsed < 60000) {
+            activeStep = 1;
+            statusText = "Pre-Order Confirmed";
+          } else {
+            activeStep = 2;
+            statusText = "Awaiting Release";
+          }
+        } else {
+          badgeClass = "in-stock-order";
+          if (elapsed < 30000) {
+            activeStep = 2;
+            statusText = "Processing";
+            badgeClass = "processing";
+          } else if (elapsed < 120000) {
+            activeStep = 3;
+            statusText = "In Transit";
+            badgeClass = "transit";
+          } else {
+            activeStep = 4;
+            statusText = "Delivered";
+            badgeClass = "delivered";
+          }
+        }
+
         ordersHtml += `
-          <div class="order-history-item">
-            <div class="order-items-detail">
-              <span class="profile-info-value" style="font-size: 1.05rem;">${itemsListStr}</span>
-              <div class="order-date-status">
-                <span>Date: ${order.date}</span>
-                <span style="margin-inline: 0.5rem; opacity: 0.5;">|</span>
-                <span>Payment: ${order.paymentMethod || 'Credit Card'}</span>
-                <span class="order-status-badge ${order.isPreOrder ? 'pre-order' : ''}" style="margin-left: 0.75rem;">${order.isPreOrder ? 'Pre-Ordered' : 'Purchased'}</span>
+          <div class="order-history-item" style="display: flex; flex-direction: column; gap: 1rem; align-items: stretch; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+              <div class="order-items-detail" style="flex-grow: 1;">
+                <span class="profile-info-value" style="font-size: 1.1rem; font-weight: 700; display: block; margin-bottom: 0.5rem; text-align: left;">${itemsListStr}</span>
+                <div class="order-date-status" style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                  <span>Date: ${order.date}</span>
+                  <span style="opacity: 0.5;">|</span>
+                  <span>Payment: ${order.paymentMethod || 'Credit Card'}</span>
+                  <span style="opacity: 0.5;">|</span>
+                  <span>Delivery: ${order.delivery || 'Phnom Penh'}</span>
+                </div>
+              </div>
+              <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                <span style="font-weight: 700; font-size: 1.25rem; color: var(--color-sand);">$${order.total.toFixed(2)}</span>
+                <span class="order-status-badge ${badgeClass}" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: var(--border-radius-pill); font-weight: 600; display: inline-block;">
+                  ${statusText}
+                </span>
               </div>
             </div>
-            <span style="font-weight: 700; font-size: 1.15rem; color: var(--color-sand);">$${order.total.toFixed(2)}</span>
+            
+            <!-- Tracking Stepper -->
+            <div class="order-tracking-stepper">
+              <div class="step ${activeStep >= 1 ? 'completed' : ''} ${activeStep === 1 ? 'active' : ''}">
+                <span class="step-dot"></span>
+                <span class="step-label">Confirmed</span>
+              </div>
+              <div class="step ${activeStep >= 2 ? 'completed' : ''} ${activeStep === 2 ? 'active' : ''}">
+                <span class="step-dot"></span>
+                <span class="step-label">${order.isPreOrder ? 'Awaiting Release' : 'Processing'}</span>
+              </div>
+              <div class="step ${activeStep >= 3 ? 'completed' : ''} ${activeStep === 3 ? 'active' : ''}">
+                <span class="step-dot"></span>
+                <span class="step-label">${order.isPreOrder ? 'Shipping Soon' : 'In Transit'}</span>
+              </div>
+              <div class="step ${activeStep >= 4 ? 'completed' : ''} ${activeStep === 4 ? 'active' : ''}">
+                <span class="step-dot"></span>
+                <span class="step-label">Delivered</span>
+              </div>
+            </div>
           </div>
         `;
       });
@@ -1338,7 +1418,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderBookCardHTML = (book) => {
     const isPreOrder = book.category === "New Arrivals" || book.publishedYear >= 2026;
     const coverHtml = book.cover 
-      ? `<img src="${book.cover}" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=&quot;book-card-no-cover&quot;><span class=&quot;book-card-no-cover-title&quot;>${book.title.replace(/'/g, "\\'")}</span><span class=&quot;book-card-no-cover-author&quot;>by ${book.author.replace(/'/g, "\\'")}</span></div>';" class="book-card-cover" alt="${book.title} Cover" loading="lazy" />`
+      ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="book-card-cover" alt="${book.title} Cover" loading="lazy" />
+         <div class="book-card-no-cover" style="display: none;">
+           <span class="book-card-no-cover-title">${book.title}</span>
+           <span class="book-card-no-cover-author">by ${book.author}</span>
+         </div>`
       : `<div class="book-card-no-cover">
           <span class="book-card-no-cover-title">${book.title}</span>
           <span class="book-card-no-cover-author">by ${book.author}</span>
@@ -1362,9 +1446,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ${isPreOrder ? `
               <button class="btn-card btn-preorder" data-id="${book.id}" style="background-color: var(--accent-color); color: var(--color-sand);">Pre-Order</button>
             ` : `
-              <div class="book-card-stock" style="margin-bottom: 0.5rem; text-align: left;">
+              <div class="book-card-stock" style="margin-block: 0.25rem 0.75rem; text-align: left; display: flex; align-items: center; width: 100%;">
                 <span class="stock-badge ${book.stock === 0 ? 'out-of-stock' : 'in-stock'}">
-                  ${book.stock === 0 ? 'Out of Stock' : `${book.stock} left`}
+                  ${book.stock === 0 ? 'Out of Stock' : `${book.stock} left in stock`}
                 </span>
               </div>
               <button class="btn-card btn-add-cart" data-id="${book.id}" ${book.stock === 0 ? 'disabled' : ''}>
@@ -1935,7 +2019,18 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="dialog-modal-content">
         <button class="dialog-close-btn" aria-label="Close details">✕</button>
         <div class="book-detail-layout">
-          ${book.cover ? `<img src="${book.cover}" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=&quot;book-detail-cover-placeholder&quot;><span class=&quot;book-card-no-cover-title&quot; style=&quot;font-size: 1.4rem; margin-bottom: 0.75rem;&quot;>${book.title.replace(/'/g, "\\'")}</span><span class=&quot;book-card-no-cover-author&quot; style=&quot;font-size: 0.95rem;&quot;>by ${book.author.replace(/'/g, "\\'")}</span></div>';" class="book-detail-cover" alt="" />` : `<div class="book-detail-cover-placeholder"><span class="book-card-no-cover-title" style="font-size: 1.4rem; margin-bottom: 0.75rem;">${book.title}</span><span class="book-card-no-cover-author" style="font-size: 0.95rem;">by ${book.author}</span></div>`}
+          ${book.cover ? `
+            <img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="book-detail-cover" alt="${book.title} Cover" />
+            <div class="book-detail-cover-placeholder" style="display: none;">
+              <span class="book-card-no-cover-title" style="font-size: 1.4rem; margin-bottom: 0.75rem;">${book.title}</span>
+              <span class="book-card-no-cover-author" style="font-size: 0.95rem;">by ${book.author}</span>
+            </div>
+          ` : `
+            <div class="book-detail-cover-placeholder">
+              <span class="book-card-no-cover-title" style="font-size: 1.4rem; margin-bottom: 0.75rem;">${book.title}</span>
+              <span class="book-card-no-cover-author" style="font-size: 0.95rem;">by ${book.author}</span>
+            </div>
+          `}
           <div class="book-detail-body">
             <h2 class="book-detail-title" style="text-align: left; margin-bottom: 0.5rem;">${book.title}</h2>
             <p class="book-detail-author">by ${book.author}</p>
