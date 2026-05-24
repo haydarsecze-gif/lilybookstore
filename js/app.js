@@ -224,8 +224,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Determine upcoming releases for slider (we take index 0 to 4 of catalog)
     const upcomingBooks = books.slice(0, 5);
-    const hotPicks = books.filter(b => b.rating >= 5).slice(0, 8); // Top 8 5-star books
-    const curatedList = books.slice(4, 12); // Next 8 books
+    const hotPicks = books.filter(b => b.rating >= 5).slice(0, 5); // Top 5 5-star books (1 row)
+    const curatedList = books.slice(4, 9); // Next 5 books (1 row)
 
     let slidesHtml = "";
     let dotsHtml = "";
@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 4rem 6rem;">
+      <section class="container" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Catalog</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem);">Browse Library</h1>
@@ -471,7 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 4rem 6rem;">
+      <section class="container" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Upcoming Releases</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem;">Pre-Order Hub</h1>
@@ -534,7 +534,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderCartView = () => {
     if (cart.length === 0) {
       contentArea.innerHTML = `
-        <section class="container" style="padding-block: 6rem; text-align: center;">
+        <section class="container" style="padding-block: 10rem 6rem; text-align: center;">
           <div style="font-size: 4rem; color: var(--accent-color); margin-bottom: 1.5rem; opacity: 0.6;">🛒</div>
           <h1 style="font-size: 2rem; margin-bottom: 1rem;">Your Cart is Empty</h1>
           <p style="margin-bottom: 2rem;">Looks like you haven't added any books to your cart yet.</p>
@@ -597,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalVal = subtotalVal - discountVal + deliveryFee;
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 4rem 6rem;">
+      <section class="container" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Checkout</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem);">Your Shopping Cart</h1>
@@ -778,7 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 4rem 6rem;">
+      <section class="container" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Community Portal</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem;">Community Chat & Requests</h1>
@@ -964,7 +964,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // RENDER ABOUT VIEW
   const renderAboutView = () => {
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 6rem 8rem; max-width: 800px; text-align: center;">
+      <section class="container" style="padding-block: 10rem 8rem; max-width: 800px; text-align: center;">
         <div class="section-header" style="margin-bottom: 2rem;">
           <span class="section-badge">Our Story</span>
           <h1>About Lily Bookstore</h1>
@@ -995,7 +995,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const renderAuthForms = () => {
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 4rem 6rem;">
+      <section class="container" style="padding-block: 8rem 6rem;">
         <div class="auth-container">
           <div class="auth-tabs">
             <button class="auth-tab-btn ${authTab === 'login' ? 'active' : ''}" id="tab-login-btn">Log In</button>
@@ -1322,7 +1322,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 4rem 6rem;">
+      <section class="container" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Dashboard</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem;">Your Profile</h1>

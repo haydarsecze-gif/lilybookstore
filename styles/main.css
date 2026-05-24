@@ -123,7 +123,11 @@ body {
 
 /* Navigation Header */
 .navbar {
-  margin: 1.5rem auto;
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
   width: 94%;
   max-width: 1100px;
   height: 76px;
@@ -136,8 +140,6 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 0.5rem 2rem;
-  position: sticky;
-  top: 1.5rem;
   z-index: 100;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   transition: var(--transition-normal);
