@@ -17,6 +17,7 @@
   height: 100%;
   display: flex;
   align-items: center;
+  z-index: 1;
 }
 
 .slider-track {
@@ -2171,6 +2172,90 @@
 
 .review-textarea:focus {
   border-color: var(--accent-color);
+}
+
+/* Stock Badge Styles */
+.stock-badge {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  display: inline-block;
+  margin-top: 0.35rem;
+  width: max-content;
+}
+
+.stock-badge.in-stock {
+  background-color: rgba(100, 180, 100, 0.15);
+  color: #8ce99a;
+  border: 1px solid rgba(100, 180, 100, 0.3);
+}
+
+.stock-badge.out-of-stock {
+  background-color: rgba(220, 100, 100, 0.15);
+  color: #ff8787;
+  border: 1px solid rgba(220, 100, 100, 0.3);
+}
+
+.detail-stock-badge {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-pill);
+  font-weight: 600;
+  display: inline-block;
+  margin-left: auto;
+}
+
+.detail-stock-badge.in-stock {
+  background-color: rgba(100, 180, 100, 0.15);
+  color: #8ce99a;
+  border: 1px solid rgba(100, 180, 100, 0.3);
+}
+
+.detail-stock-badge.out-of-stock {
+  background-color: rgba(220, 100, 100, 0.15);
+  color: #ff8787;
+  border: 1px solid rgba(220, 100, 100, 0.3);
+}
+
+/* Disabled buttons styling */
+.btn-card:disabled, .btn-primary:disabled {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-muted) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Blurred slider background container styles */
+.slider-bg-blur-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.slider-bg-blur-image {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) brightness(0.25);
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  z-index: 0;
+}
+
+.slider-bg-blur-image.active {
+  opacity: 1;
 }
 
 

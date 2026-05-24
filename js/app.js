@@ -116,6 +116,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const cartSubtotal = document.getElementById("cart-subtotal");
   const cartCountBadges = document.querySelectorAll(".cart-count");
   const bookDialog = document.getElementById("book-dialog");
+  if (bookDialog) {
+    bookDialog.addEventListener("click", (e) => {
+      if (e.target === bookDialog) {
+        bookDialog.close();
+      }
+    });
+  }
   const floatingCart = document.getElementById("floating-cart");
   const toastContainer = document.getElementById("toast-container");
 
@@ -239,7 +246,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${isPreOrder ? `
                   <button class="btn-primary btn-preorder" data-id="${book.id}" style="background-color: var(--color-brown); border: 1px solid var(--glass-border);">Pre-Order</button>
                 ` : `
-                  <button class="btn-primary btn-add-cart" data-id="${book.id}" style="background-color: var(--color-brown); border: 1px solid var(--glass-border);">Add to Cart</button>
+                  <button class="btn-primary btn-add-cart" data-id="${book.id}" ${book.stock === 0 ? 'disabled' : ''} style="background-color: var(--color-brown); border: 1px solid var(--glass-border);">
+                    ${book.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                  </button>
                 `}
               </div>
             </div>
@@ -265,6 +274,13 @@ document.addEventListener("DOMContentLoaded", () => {
     contentArea.innerHTML = `
       <!-- Hero Carousel Slider (No Arrow Buttons, Frosted Layout) -->
       <section class="hero-slider-section">
+        <!-- Blurred backgrounds stack -->
+        <div class="slider-bg-blur-container">
+          ${upcomingBooks.map((book, idx) => `
+            <div class="slider-bg-blur-image ${idx === activeSlideIndex ? 'active' : ''}" 
+                 style="background-image: url('${book.cover}');"></div>
+          `).join('')}
+        </div>
         <div class="container slider-wrapper">
           <div class="slider-track">
             ${slidesHtml}
@@ -313,10 +329,10 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     });
 
-    // Filter books
-    let filteredBooks = books;
+    // Filter books (exclude pre-orders from general browse library)
+    let filteredBooks = books.filter(b => !(b.category === "New Arrivals" || b.publishedYear >= 2026));
     if (currentFilter !== "All Books") {
-      filteredBooks = books.filter(b => b.category === currentFilter);
+      filteredBooks = filteredBooks.filter(b => b.category === currentFilter);
     }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -656,10 +672,11 @@ document.addEventListener("DOMContentLoaded", () => {
               <!-- Conditional payment fields -->
               ${selectedPayment === 'credit-card' ? `
                 <div class="payment-method-fields" style="display: flex; flex-direction: column; gap: 0.75rem; animation: fadeIn 0.3s ease;">
-                  <input type="text" class="input-text" required placeholder="Card Number (16-digits)" style="padding-block: 0.65rem;" pattern="[0-9]{16}">
+                  <input type="text" class="input-text" required placeholder="Cardholder Name" style="padding-block: 0.65rem;">
+                  <input type="text" class="input-text" required placeholder="Card Number (16-digits)" style="padding-block: 0.65rem;">
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                    <input type="text" class="input-text" required placeholder="Expiry MM/YY" style="padding-block: 0.65rem;" pattern="[0-9]{2}/[0-9]{2}">
-                    <input type="text" class="input-text" required placeholder="CVV (3-digits)" style="padding-block: 0.65rem;" pattern="[0-9]{3}">
+                    <input type="text" class="input-text" required placeholder="Expiry MM/YY" style="padding-block: 0.65rem;">
+                    <input type="text" class="input-text" required placeholder="CVV (3-digits)" style="padding-block: 0.65rem;">
                   </div>
                 </div>
               ` : ""}
@@ -667,7 +684,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ${selectedPayment === 'aba-pay' ? `
                 <div class="payment-method-fields" style="display: flex; flex-direction: column; gap: 0.75rem; text-align: center; padding: 1rem; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); background-color: rgba(2, 70, 68, 0.3); animation: fadeIn 0.3s ease;">
                   <p style="font-size: 0.85rem; color: var(--color-sand); margin-bottom: 0.75rem;">Simulate paying with ABA Mobile app</p>
-                  <input type="text" class="input-text" required placeholder="ABA Phone Number or Account ID" style="padding-block: 0.65rem;" pattern="[0-9]{9,12}">
+                  <input type="text" class="input-text" required placeholder="ABA Phone Number or Account ID" style="padding-block: 0.65rem;">
                 </div>
               ` : ""}
 
@@ -1345,7 +1362,14 @@ document.addEventListener("DOMContentLoaded", () => {
             ${isPreOrder ? `
               <button class="btn-card btn-preorder" data-id="${book.id}" style="background-color: var(--accent-color); color: var(--color-sand);">Pre-Order</button>
             ` : `
-              <button class="btn-card btn-add-cart" data-id="${book.id}">Add to Cart</button>
+              <div class="book-card-stock" style="margin-bottom: 0.5rem; text-align: left;">
+                <span class="stock-badge ${book.stock === 0 ? 'out-of-stock' : 'in-stock'}">
+                  ${book.stock === 0 ? 'Out of Stock' : `${book.stock} left`}
+                </span>
+              </div>
+              <button class="btn-card btn-add-cart" data-id="${book.id}" ${book.stock === 0 ? 'disabled' : ''}>
+                ${book.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              </button>
             `}
           </div>
         </article>
@@ -1376,6 +1400,16 @@ document.addEventListener("DOMContentLoaded", () => {
           dot.classList.add("active");
         } else {
           dot.classList.remove("active");
+        }
+      });
+
+      // Update dynamic blurred background opacity
+      const bgImages = contentArea.querySelectorAll(".slider-bg-blur-image");
+      bgImages.forEach((img, i) => {
+        if (i === index) {
+          img.classList.add("active");
+        } else {
+          img.classList.remove("active");
         }
       });
     };
@@ -1657,6 +1691,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartItemId = storeInfo ? `${bookId}-${storeInfo.store.replace(/\s+/g, '-').toLowerCase()}` : bookId;
     const existing = cart.find(i => i.id === cartItemId);
     
+    if (!isPreOrder) {
+      const maxStock = typeof book.stock !== 'undefined' ? book.stock : 999;
+      const currentQty = existing ? existing.qty : 0;
+      if (currentQty >= maxStock) {
+        showToast(`Sorry, only ${maxStock} copy/copies of "${book.title}" are available in stock.`, "warning");
+        return;
+      }
+    }
+
     if (existing) {
       existing.qty++;
     } else {
@@ -1685,6 +1728,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateCartQty = (bookId, delta) => {
     const item = cart.find(i => i.id === bookId);
     if (!item) return;
+
+    if (delta > 0 && !item.isPreOrder) {
+      const book = books.find(b => b.id === item.bookId);
+      if (book) {
+        const maxStock = typeof book.stock !== 'undefined' ? book.stock : 999;
+        if (item.qty + delta > maxStock) {
+          showToast(`Sorry, only ${maxStock} copy/copies of "${book.title}" are available in stock.`, "warning");
+          return;
+        }
+      }
+    }
 
     item.qty += delta;
     if (item.qty <= 0) {
@@ -1885,11 +1939,16 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="book-detail-body">
             <h2 class="book-detail-title" style="text-align: left; margin-bottom: 0.5rem;">${book.title}</h2>
             <p class="book-detail-author">by ${book.author}</p>
-            <div class="book-detail-meta">
+            <div class="book-detail-meta" style="display: flex; align-items: center; gap: 1rem;">
               <div class="book-card-stars" style="font-size: 1.1rem;">
                 ${'★'.repeat(book.rating)}${'☆'.repeat(5 - book.rating)}
               </div>
               <span class="book-card-price" style="font-size: 1.4rem;">$${book.price.toFixed(2)}</span>
+              ${!isPreOrder ? `
+                <span class="detail-stock-badge ${book.stock === 0 ? 'out-of-stock' : 'in-stock'}">
+                  ${book.stock === 0 ? 'Out of Stock' : `${book.stock} left in stock`}
+                </span>
+              ` : ''}
             </div>
             <p class="book-detail-desc">${book.description}</p>
             <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
@@ -1898,8 +1957,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   Pre-Order
                 </button>
               ` : `
-                <button class="btn-primary btn-modal-add-cart" data-id="${book.id}">
-                  Add to Cart
+                <button class="btn-primary btn-modal-add-cart" data-id="${book.id}" ${book.stock === 0 ? 'disabled' : ''}>
+                  ${book.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                 </button>
               `}
             </div>
