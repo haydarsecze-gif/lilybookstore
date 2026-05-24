@@ -1,0 +1,208 @@
+/* Responsive adjustments for Tablets and Mobile Devices */
+
+@media (max-width: 992px) {
+  .slide-content-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+
+  .slide-content {
+    align-items: center;
+  }
+
+  .slide-visual {
+    order: -1; /* Show cover art first on mobile */
+  }
+
+  .cart-page-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .footer-subscribe-col {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+
+  .tablet-frame {
+    border-radius: 0;
+    min-height: 100vh;
+    border: none;
+  }
+
+  .navbar {
+    width: calc(100% - 1.5rem);
+    margin: 0.75rem auto;
+    top: 0.75rem;
+    height: 56px;
+    padding: 0.5rem 1.25rem;
+    border-radius: 20px;
+  }
+
+  /* Hamburger Navigation */
+  .nav-toggle {
+    display: block;
+    cursor: pointer;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 72px;
+    left: 1rem;
+    right: 1rem;
+    background-color: rgba(75, 54, 33, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 1rem;
+    transform: translateY(-150%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--transition-normal), opacity var(--transition-normal);
+    z-index: 99;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-link {
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .library-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-wrapper {
+    max-width: none;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer-subscribe-col {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .footer-logo-wrapper {
+    grid-column: 1;
+    border-left: none;
+    border-top: 1px solid var(--glass-border);
+    padding-left: 0;
+    padding-top: 1.5rem;
+    align-items: center;
+  }
+
+  .footer-logo {
+    text-align: center;
+  }
+
+  .book-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .book-detail-cover {
+    max-width: 220px;
+    margin-inline: auto;
+  }
+
+  .book-detail-meta {
+    justify-content: center;
+  }
+
+  .sync-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-modal-content {
+    padding: 1.5rem;
+  }
+
+  .goodreads-sync-container {
+    padding: 1.5rem;
+  }
+
+  .cart-drawer {
+    max-width: 100%;
+  }
+
+  .cart-items-panel {
+    padding: 1.25rem;
+  }
+
+  .cart-table-item {
+    grid-template-columns: 60px 1fr;
+    gap: 1rem;
+  }
+
+  .cart-table-cover {
+    width: 60px;
+    height: 90px;
+  }
+
+  .cart-table-actions {
+    grid-column: span 2;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+
+  /* Coarse touch targets */
+  @media (pointer: coarse) {
+    .filter-btn, .nav-link, .btn-card, .cart-qty-btn, .btn-sync, .btn-primary {
+      padding-block: 0.8rem;
+      min-height: 48px;
+    }
+
+    .dialog-close-btn {
+      width: 44px;
+      height: 44px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slide-cover-stack {
+    width: 180px;
+    height: 270px;
+  }
+
+  .slide-title {
+    font-size: 2.1rem;
+  }
+}

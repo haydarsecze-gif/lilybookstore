@@ -1,0 +1,77 @@
+:root {
+  /* Exclusive 4-Color Palette System */
+  --color-teal: #024644;
+  --color-sand: #E7D7C1;
+  --color-brown: #4B3621;
+  --color-rose: #B5838D;
+
+  /* Translucent/Alpha variations of the 4 colors for glassmorphism and overlay depths */
+  --color-teal-alpha-90: rgba(2, 70, 68, 0.9);
+  --color-teal-alpha-80: rgba(2, 70, 68, 0.8);
+  --color-teal-alpha-50: rgba(2, 70, 68, 0.5);
+  
+  --color-sand-alpha-80: rgba(231, 215, 193, 0.8);
+  --color-sand-alpha-60: rgba(231, 215, 193, 0.6);
+  --color-sand-alpha-40: rgba(231, 215, 193, 0.4);
+  --color-sand-alpha-15: rgba(231, 215, 193, 0.15);
+  --color-sand-alpha-08: rgba(231, 215, 193, 0.08);
+  
+  --color-brown-alpha-90: rgba(75, 54, 33, 0.9);
+  --color-brown-alpha-60: rgba(75, 54, 33, 0.6);
+  --color-brown-alpha-30: rgba(75, 54, 33, 0.3);
+  --color-brown-alpha-15: rgba(75, 54, 33, 0.15);
+
+  --color-rose-alpha-80: rgba(181, 131, 141, 0.8);
+  --color-rose-alpha-30: rgba(181, 131, 141, 0.3);
+  --color-rose-alpha-15: rgba(181, 131, 141, 0.15);
+
+  /* Semantic Mapping */
+  --bg-primary: var(--color-teal);
+  --bg-secondary: var(--color-brown);
+  --bg-tertiary: var(--color-brown-alpha-60);
+  --bg-footer: var(--color-brown);
+  --accent-color: var(--color-rose);
+  --accent-hover: var(--color-rose-alpha-80);
+  --accent-subtle: var(--color-rose-alpha-15);
+  --text-main: var(--color-sand);
+  --text-muted: var(--color-sand-alpha-60);
+  --text-inverse: var(--color-teal);
+
+  /* Glassmorphism Presets built using palette alphas */
+  --glass-bg: var(--color-brown-alpha-30);
+  --glass-bg-hover: var(--color-brown-alpha-60);
+  --glass-border: var(--color-sand-alpha-15);
+  --glass-border-focus: var(--color-sand-alpha-40);
+  --glass-blur: 16px;
+  --glass-shadow: 0 8px 32px 0 var(--color-brown-alpha-90);
+
+  /* Typography */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Layout and Spacing */
+  --container-max-width: 1200px;
+  --header-height: 80px;
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
+  --border-radius-pill: 9999px;
+
+  /* Animation and Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Scrollbar Stability */
+  scrollbar-gutter: stable;
+}
+
+/* Base supports checks for oklab/oklch colors space defaults */
+:root {
+  --in-oklab: ;
+}
+@supports (linear-gradient(in oklab, white, black)) {
+  :root {
+    --in-oklab: in oklab;
+  }
+}
