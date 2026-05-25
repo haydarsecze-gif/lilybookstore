@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let preorderSearchQuery = ""; // Search term for preorder titles
   let isSearchingExternal = false; // Loading status for external search
   let externalPreorderResults = []; // Results of external search
+  let isSearchingBrowseExternal = false; // Loading status for browse external search
+  let browseExternalResults = []; // Results of browse external search
   let currentUser = null; // Profile session data
   let authTab = "login"; // login or register view active tab
   let selectedDelivery = "phnom-penh";
@@ -363,30 +365,6 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     });
 
-    // Filter books (exclude pre-orders from general browse library)
-    let filteredBooks = books.filter(b => !(b.category === "New Arrivals" || b.publishedYear >= 2026));
-    if (currentFilter !== "All Books") {
-      filteredBooks = filteredBooks.filter(b => b.category === currentFilter);
-    }
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filteredBooks = filteredBooks.filter(b => 
-        b.title.toLowerCase().includes(q) || 
-        b.author.toLowerCase().includes(q)
-      );
-    }
-
-    let booksListHtml = "";
-    if (filteredBooks.length === 0) {
-      booksListHtml = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
-          <p style="font-size: 1.25rem;">No books found matching your filters.</p>
-        </div>
-      `;
-    } else {
-      filteredBooks.forEach(book => booksListHtml += renderBookCardHTML(book));
-    }
-
     contentArea.innerHTML = `
       <section class="container" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
@@ -406,14 +384,120 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <!-- Catalog Listing Grid -->
-        <div class="books-grid">
-          ${booksListHtml}
+        <div class="books-grid" id="catalog-books-grid">
+          <!-- Loaded dynamically by renderBrowseResults -->
         </div>
       </section>
     `;
 
+    // Bind event listeners locally to avoid destroying input box focus
+    const searchInput = document.getElementById("catalog-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        searchQuery = e.target.value;
+        clearTimeout(window.searchDebounceTimer);
+        window.searchDebounceTimer = setTimeout(() => {
+          executeBrowseSearch();
+        }, 300);
+      });
+    }
+
+    contentArea.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentFilter = btn.dataset.category;
+        contentArea.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        executeBrowseSearch();
+      });
+    });
+
+    executeBrowseSearch();
+  };
+
+  const renderBrowseResults = () => {
+    const booksGrid = document.getElementById("catalog-books-grid");
+    if (!booksGrid) return;
+
+    // Filter books locally
+    let filteredBooks = books.filter(b => !(b.category === "New Arrivals" || b.publishedYear >= 2026));
+    if (currentFilter !== "All Books") {
+      filteredBooks = filteredBooks.filter(b => b.category === currentFilter);
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filteredBooks = filteredBooks.filter(b => 
+        b.title.toLowerCase().includes(q) || 
+        b.author.toLowerCase().includes(q)
+      );
+    }
+
+    let localHtml = filteredBooks.map(b => renderBookCardHTML(b, false)).join('');
+
+    if (isSearchingBrowseExternal) {
+      booksGrid.innerHTML = `
+        ${localHtml}
+        <div style="grid-column: 1 / -1; margin-top: 1rem; margin-bottom: 0.5rem;"><h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--color-sand);">Searching external databases...</h3></div>
+        ${Array(2).fill(0).map(() => `
+          <div class="preorder-card" style="opacity: 0.6;">
+            <div class="preorder-cover-wrapper skeleton-loader"></div>
+            <div class="preorder-details" style="gap: 1rem;">
+              <div class="skeleton-loader" style="height: 24px; width: 60%;"></div>
+              <div class="skeleton-loader" style="height: 16px; width: 40%;"></div>
+              <div class="skeleton-loader" style="height: 80px; width: 100%;"></div>
+            </div>
+          </div>
+        `).join('')}
+      `;
+      return;
+    }
+
+    let extHtml = browseExternalResults.map(b => renderBookCardHTML(b, true)).join('');
+
+    if (!localHtml && !extHtml) {
+      booksGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+          <p style="font-size: 1.25rem;">No books found matching your search.</p>
+        </div>
+      `;
+      return;
+    }
+
+    booksGrid.innerHTML = localHtml + extHtml;
     attachBookCardListeners();
-    attachBrowseFilterListeners();
+  };
+
+  const executeBrowseSearch = async () => {
+    const q = searchQuery.trim();
+    if (q.length > 0) {
+      if (window.lastBrowseSearchQuery !== q) {
+        window.lastBrowseSearchQuery = q;
+        isSearchingBrowseExternal = true;
+        renderBrowseResults();
+
+        try {
+          const results = await window.GoodreadsSync.searchOpenLibrary(q);
+          // Filter out duplicates (books already in local books array)
+          browseExternalResults = results.filter(ext => 
+            !books.some(b => b.title.toLowerCase() === ext.title.toLowerCase())
+          );
+        } catch (err) {
+          console.error(err);
+          browseExternalResults = [];
+        } finally {
+          isSearchingBrowseExternal = false;
+          if (currentTab === "browse" && searchQuery.trim() === q) {
+            renderBrowseResults();
+          }
+        }
+      } else {
+        renderBrowseResults();
+      }
+    } else {
+      window.lastBrowseSearchQuery = "";
+      browseExternalResults = [];
+      isSearchingBrowseExternal = false;
+      renderBrowseResults();
+    }
   };
 
   // RENDER DEDICATED PRE-ORDER HUB VIEW
@@ -1581,7 +1665,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Helper function to build Book Card HTML
-  const renderBookCardHTML = (book) => {
+  const renderBookCardHTML = (book, isExternal = false) => {
     const isPreOrder = book.category === "New Arrivals" || book.publishedYear >= 2026;
     const coverHtml = book.cover 
       ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="book-card-cover" alt="${book.title} Cover" loading="lazy" />
@@ -1594,14 +1678,17 @@ document.addEventListener("DOMContentLoaded", () => {
           <span class="book-card-no-cover-author">by ${book.author}</span>
          </div>`;
 
+    const btnClass = isExternal ? "btn-browse-external" : (isPreOrder ? "btn-preorder" : "btn-add-cart");
+    const btnText = isExternal ? "Add to Cart" : (isPreOrder ? "Pre-Order" : "Add to Cart");
+
     return `
       <div class="card-wrapper">
         <article class="book-card">
-          <div class="book-card-cover-wrapper" style="cursor: pointer;" data-id="${book.id}">
+          <div class="book-card-cover-wrapper" style="cursor: pointer;" data-id="${book.id}" data-external="${isExternal}">
             ${coverHtml}
           </div>
           <div class="book-card-info">
-            <h3 class="book-card-title" style="cursor: pointer;" data-id="${book.id}">${book.title}</h3>
+            <h3 class="book-card-title" style="cursor: pointer;" data-id="${book.id}" data-external="${isExternal}">${book.title}</h3>
             <p class="book-card-author">by ${book.author}</p>
             <div class="book-card-meta">
               <div class="book-card-stars">
@@ -1609,18 +1696,27 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <span class="book-card-price">$${book.price.toFixed(2)}</span>
             </div>
-            ${isPreOrder ? `
-              <button class="btn-card btn-preorder" data-id="${book.id}" style="background-color: var(--accent-color); color: var(--color-sand);">Pre-Order</button>
+            ${isExternal ? `
+              <div class="book-card-stock" style="margin-block: 0.25rem 0.75rem; text-align: left; display: flex; align-items: center; width: 100%;">
+                <span class="stock-badge in-stock" style="background: rgba(2, 70, 68, 0.4); color: var(--color-sand);">
+                  Web Result
+                </span>
+              </div>
+              <button class="btn-card ${btnClass}" data-id="${book.id}">
+                ${btnText}
+              </button>
+            ` : (isPreOrder ? `
+              <button class="btn-card ${btnClass}" data-id="${book.id}" style="background-color: var(--accent-color); color: var(--color-sand);">Pre-Order</button>
             ` : `
               <div class="book-card-stock" style="margin-block: 0.25rem 0.75rem; text-align: left; display: flex; align-items: center; width: 100%;">
                 <span class="stock-badge ${book.stock === 0 ? 'out-of-stock' : 'in-stock'}">
                   ${book.stock === 0 ? 'Out of Stock' : `${book.stock} left in stock`}
                 </span>
               </div>
-              <button class="btn-card btn-add-cart" data-id="${book.id}" ${book.stock === 0 ? 'disabled' : ''}>
+              <button class="btn-card ${btnClass}" data-id="${book.id}" ${book.stock === 0 ? 'disabled' : ''}>
                 ${book.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
-            `}
+            `)}
           </div>
         </article>
       </div>
@@ -1695,7 +1791,22 @@ document.addEventListener("DOMContentLoaded", () => {
       if (el.dataset.id && (el.tagName === "DIV" || el.tagName === "H3" || el.classList.contains("btn-explore"))) {
         el.addEventListener("click", (e) => {
           e.stopPropagation();
-          showBookDetail(el.dataset.id);
+          const bookId = el.dataset.id;
+          const isExternal = el.dataset.external === "true";
+          
+          if (isExternal) {
+            const book = browseExternalResults.find(b => b.id === bookId);
+            if (book) {
+              if (!books.some(b => b.id === book.id)) {
+                book.stock = 5;
+                books.push(book);
+                saveImportedBooks(books);
+              }
+              showBookDetail(book.id);
+            }
+          } else {
+            showBookDetail(bookId);
+          }
         });
       }
     });
@@ -1713,33 +1824,36 @@ document.addEventListener("DOMContentLoaded", () => {
         addToCart(btn.dataset.id, true);
       });
     });
-  };
 
-  // Attach Browse Filters and Local search listeners
-  const attachBrowseFilterListeners = () => {
-    contentArea.querySelectorAll(".filter-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        currentFilter = btn.dataset.category;
-        renderBrowseView();
+    contentArea.querySelectorAll(".btn-browse-external").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const bookId = btn.dataset.id;
+        const book = browseExternalResults.find(b => b.id === bookId);
+        if (book) {
+          if (!books.some(b => b.id === book.id)) {
+            book.stock = 5;
+            books.push(book);
+            saveImportedBooks(books);
+          }
+          addToCart(book.id);
+          
+          btn.disabled = true;
+          btn.style.opacity = "0.5";
+          btn.textContent = "Added to Cart";
+          
+          setTimeout(() => {
+            if (currentTab === "browse") {
+              executeBrowseSearch();
+            }
+          }, 800);
+        }
       });
     });
-
-    const searchInput = contentArea.querySelector("#catalog-search");
-    if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        searchQuery = e.target.value;
-        clearTimeout(window.searchDebounceTimer);
-        window.searchDebounceTimer = setTimeout(() => {
-          renderBrowseView();
-          const newInput = contentArea.querySelector("#catalog-search");
-          if (newInput) {
-            newInput.focus();
-            newInput.setSelectionRange(newInput.value.length, newInput.value.length);
-          }
-        }, 150);
-      });
-    }
   };
+
+  // Attach Browse Filters and Local search listeners (Handled locally inside renderBrowseView now)
+  const attachBrowseFilterListeners = () => {};
 
   // Attach Universal "Collect Any Book" Search triggers
   const attachCollectListeners = () => {
