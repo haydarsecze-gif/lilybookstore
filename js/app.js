@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let scrapedBooksList = []; // Goodreads automatically crawled books
   let olSearchResults = []; // OpenLibrary lookups
   let preorderSearchQuery = ""; // Search term for preorder titles
+  let isSearchingExternal = false; // Loading status for external search
+  let externalPreorderResults = []; // Results of external search
   let currentUser = null; // Profile session data
   let authTab = "login"; // login or register view active tab
   let selectedDelivery = "phnom-penh";
@@ -141,19 +143,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateNavIndicator = () => {
     const activeLink = document.querySelector(`.nav-link[data-tab="${currentTab}"]`);
     const indicator = document.querySelector(".nav-indicator");
-    const navLinksContainer = document.querySelector(".nav-links");
     
-    if (window.innerWidth > 768 && activeLink && indicator && navLinksContainer) {
-      indicator.style.display = "block";
-      const rect = activeLink.getBoundingClientRect();
-      const parentRect = navLinksContainer.getBoundingClientRect();
-      
-      indicator.style.left = `${rect.left - parentRect.left}px`;
-      indicator.style.width = `${rect.width}px`;
-      indicator.style.top = `${rect.top - parentRect.top}px`;
-      indicator.style.height = `${rect.height}px`;
-    } else if (indicator) {
-      indicator.style.display = "none";
+    if (activeLink && indicator) {
+      const navItem = activeLink.closest(".nav-item");
+      if (navItem) {
+        indicator.style.display = "block";
+        indicator.style.left = `${navItem.offsetLeft}px`;
+        indicator.style.width = `${navItem.offsetWidth}px`;
+        indicator.style.top = `${navItem.offsetTop}px`;
+        indicator.style.height = `${navItem.offsetHeight}px`;
+      }
     }
   };
 
@@ -276,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="slide-rating">${'★'.repeat(book.rating)}${'☆'.repeat(5 - book.rating)}</span>
               </div>
               <p class="slide-desc">${book.description}</p>
-              <div style="display: flex; gap: 1rem;">
+              <div class="slide-actions-row">
                 <button class="btn-primary btn-explore" data-id="${book.id}">Explore Details</button>
                 ${isPreOrder ? `
                   <button class="btn-primary btn-preorder" data-id="${book.id}" style="background-color: var(--color-brown); border: 1px solid var(--glass-border);">Pre-Order</button>
@@ -419,137 +418,282 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // RENDER DEDICATED PRE-ORDER HUB VIEW
   const renderPreOrderView = () => {
-    let filteredPreorders = books.filter(b => b.category === "New Arrivals" || b.publishedYear >= 2026);
+    // Eligible local preorders: out of stock, or upcoming
+    let eligibleLocalPreorders = books.filter(b => b.stock === 0 || b.publishedYear >= 2026);
     
+    // Reset or keep filtered list
+    let filteredPreorders = [...eligibleLocalPreorders];
     if (preorderSearchQuery) {
       const q = preorderSearchQuery.toLowerCase();
       filteredPreorders = filteredPreorders.filter(b => 
         b.title.toLowerCase().includes(q) || 
         b.author.toLowerCase().includes(q)
       );
+    } else {
+      externalPreorderResults = [];
     }
 
-    let preorderCardsHtml = "";
-    if (filteredPreorders.length === 0) {
-      preorderCardsHtml = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
-          <p style="font-size: 1.25rem;">No pre-order titles found matching your search.</p>
-        </div>
-      `;
-    } else {
-      filteredPreorders.forEach(book => {
-        const coverHtml = book.cover 
-          ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="preorder-cover" alt="${book.title} Cover" />
-             <div class="book-card-no-cover" style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-               <span class="book-card-no-cover-title" style="font-size: 1.1rem;">${book.title}</span>
-               <span class="book-card-no-cover-author">by ${book.author}</span>
-             </div>`
-          : `<div class="book-card-no-cover" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-              <span class="book-card-no-cover-title" style="font-size: 1.1rem;">${book.title}</span>
-              <span class="book-card-no-cover-author">by ${book.author}</span>
-             </div>`;
+    const renderPreorderCardHtml = (book, isExternal = false) => {
+      const coverHtml = book.cover 
+        ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="preorder-cover" alt="${book.title} Cover" />
+           <div class="book-card-no-cover" style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+             <span class="book-card-no-cover-title" style="font-size: 1.1rem;">${book.title}</span>
+             <span class="book-card-no-cover-author">by ${book.author}</span>
+           </div>`
+        : `<div class="book-card-no-cover" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <span class="book-card-no-cover-title" style="font-size: 1.1rem;">${book.title}</span>
+            <span class="book-card-no-cover-author">by ${book.author}</span>
+           </div>`;
 
-        preorderCardsHtml += `
-          <div class="preorder-card">
-            <div class="preorder-cover-wrapper" style="cursor: pointer;" data-id="${book.id}">
-              ${coverHtml}
+      const starsHtml = `<div class="book-card-stars" style="color: var(--accent-color); font-size: 0.95rem; margin-bottom: 0.75rem; text-align: left;">${'★'.repeat(book.rating)}${'☆'.repeat(5 - book.rating)}</div>`;
+
+      const amazonPrice = book.price.toFixed(2);
+      const worksPrice = (book.price * 0.9).toFixed(2);
+      const goodreadsPrice = (book.price * 0.95).toFixed(2);
+
+      const btnClass = isExternal ? "btn-preorder-external" : "btn-preorder-add";
+
+      return `
+        <div class="preorder-card">
+          <div class="preorder-cover-wrapper" style="cursor: pointer;" data-id="${book.id}" data-external="${isExternal}">
+            ${coverHtml}
+          </div>
+          <div class="preorder-details">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 class="book-card-title" style="cursor: pointer; font-size: 1.5rem;" data-id="${book.id}" data-external="${isExternal}">${book.title}</h3>
+                ${isExternal ? `
+                  <span style="font-size: 0.7rem; font-family: var(--font-sans); background: var(--color-rose-alpha-30); color: var(--accent-color); padding: 0.15rem 0.5rem; border-radius: var(--border-radius-pill); border: 1px solid var(--glass-border); flex-shrink: 0;">Global</span>
+                ` : `
+                  <span style="font-size: 0.7rem; font-family: var(--font-sans); background: rgba(2, 70, 68, 0.4); color: var(--color-sand); padding: 0.15rem 0.5rem; border-radius: var(--border-radius-pill); border: 1px solid var(--glass-border); flex-shrink: 0;">${book.stock === 0 ? 'Out of Stock' : 'Upcoming'}</span>
+                `}
+              </div>
+              <p class="book-card-author" style="font-size: 0.95rem; margin-bottom: 0.5rem;">by ${book.author}</p>
+              ${starsHtml}
+              <p class="slide-desc" style="font-size: 0.9rem; margin-bottom: 1rem; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; line-clamp: 2; overflow: hidden;">${book.description}</p>
             </div>
-            <div class="preorder-details">
-              <div>
-                <h3 class="book-card-title" style="cursor: pointer; font-size: 1.5rem; margin-bottom: 0.25rem;" data-id="${book.id}">${book.title}</h3>
-                <p class="book-card-author" style="font-size: 0.95rem; margin-bottom: 0.75rem;">by ${book.author}</p>
-                <p class="slide-desc" style="font-size: 0.9rem; margin-bottom: 1rem; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; line-clamp: 2; overflow: hidden;">${book.description}</p>
+            
+            <div class="preorder-retailers">
+              <!-- Amazon US -->
+              <div class="retailer-option">
+                <div class="retailer-name">Amazon (US)</div>
+                <div class="retailer-meta">Ships from: United States</div>
+                <div class="retailer-price">$${amazonPrice}</div>
+                <button class="btn-preorder-retailer ${btnClass}" data-id="${book.id}" data-store="Amazon (US)" data-country="United States" data-price="${amazonPrice}">Pre-Order</button>
               </div>
               
-              <div class="preorder-retailers">
-                <!-- Amazon US -->
-                <div class="retailer-option">
-                  <div class="retailer-name">Amazon (US)</div>
-                  <div class="retailer-meta">Ships from: United States</div>
-                  <div class="retailer-price">$16.99</div>
-                  <button class="btn-preorder-retailer btn-preorder-add" data-id="${book.id}" data-store="Amazon (US)" data-country="United States" data-price="16.99">Pre-Order</button>
-                </div>
-                
-                <!-- The Works UK -->
-                <div class="retailer-option">
-                  <div class="retailer-name">The Works (UK)</div>
-                  <div class="retailer-meta">Ships from: United Kingdom</div>
-                  <div class="retailer-price">£11.99</div>
-                  <button class="btn-preorder-retailer btn-preorder-add" data-id="${book.id}" data-store="The Works (UK)" data-country="United Kingdom" data-price="15.50">Pre-Order</button>
-                </div>
-                
-                <!-- Indigo CA -->
-                <div class="retailer-option">
-                  <div class="retailer-name">Indigo (CA)</div>
-                  <div class="retailer-meta">Ships from: Canada</div>
-                  <div class="retailer-price">CAD 22.50</div>
-                  <button class="btn-preorder-retailer btn-preorder-add" data-id="${book.id}" data-store="Indigo (CA)" data-country="Canada" data-price="16.50">Pre-Order</button>
-                </div>
+              <!-- The Works UK -->
+              <div class="retailer-option">
+                <div class="retailer-name">The Works (UK)</div>
+                <div class="retailer-meta">Ships from: United Kingdom</div>
+                <div class="retailer-price">$${worksPrice}</div>
+                <button class="btn-preorder-retailer ${btnClass}" data-id="${book.id}" data-store="The Works (UK)" data-country="United Kingdom" data-price="${worksPrice}">Pre-Order</button>
+              </div>
+              
+              <!-- Goodreads Global -->
+              <div class="retailer-option">
+                <div class="retailer-name">Goodreads (Global)</div>
+                <div class="retailer-meta">Global Partner</div>
+                <div class="retailer-price">$${goodreadsPrice}</div>
+                <button class="btn-preorder-retailer ${btnClass}" data-id="${book.id}" data-store="Goodreads (Global)" data-country="Global" data-price="${goodreadsPrice}">Pre-Order</button>
               </div>
             </div>
           </div>
-        `;
+        </div>
+      `;
+    };
+
+    const bindPreorderListeners = () => {
+      const localGrid = document.getElementById("local-preorder-grid");
+      if (!localGrid) return;
+
+      localGrid.querySelectorAll(".preorder-cover-wrapper, .book-card-title").forEach(el => {
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const bookId = el.dataset.id;
+          const isExternal = el.dataset.external === "true";
+          
+          if (isExternal) {
+            let book = externalPreorderResults.find(b => b.id === bookId);
+            if (book) {
+              const localBook = books.find(b => b.title.toLowerCase() === book.title.toLowerCase());
+              if (localBook) {
+                showBookDetail(localBook.id);
+              } else {
+                if (!books.some(b => b.id === book.id)) {
+                  books.push(book);
+                  saveImportedBooks(books);
+                }
+                showBookDetail(book.id);
+              }
+            }
+          } else {
+            showBookDetail(bookId);
+          }
+        });
       });
-    }
+
+      localGrid.querySelectorAll(".btn-preorder-add").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const store = btn.dataset.store;
+          const country = btn.dataset.country;
+          const price = parseFloat(btn.dataset.price);
+          addToCart(btn.dataset.id, true, { store, country, price });
+        });
+      });
+
+      localGrid.querySelectorAll(".btn-preorder-external").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const bookId = btn.dataset.id;
+          const store = btn.dataset.store;
+          const country = btn.dataset.country;
+          const price = parseFloat(btn.dataset.price);
+
+          let book = externalPreorderResults.find(b => b.id === bookId);
+          if (book) {
+            const localBook = books.find(b => b.title.toLowerCase() === book.title.toLowerCase());
+            const targetId = localBook ? localBook.id : book.id;
+            if (!localBook && !books.some(b => b.id === book.id)) {
+              books.push(book);
+              saveImportedBooks(books);
+            }
+            addToCart(targetId, true, { store, country, price });
+          }
+        });
+      });
+    };
+
+    const renderPreorderResults = () => {
+      const localGrid = document.getElementById("local-preorder-grid");
+      if (!localGrid) return;
+
+      if (isSearchingExternal) {
+        let localHtml = filteredPreorders.map(b => renderPreorderCardHtml(b, false)).join('');
+        localGrid.innerHTML = `
+          ${localHtml}
+          <div style="grid-column: 1 / -1; margin-top: 1rem; margin-bottom: 0.5rem;"><h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--color-sand);">Searching Amazon, The Works & Goodreads...</h3></div>
+          ${Array(2).fill(0).map(() => `
+            <div class="preorder-card" style="opacity: 0.6;">
+              <div class="preorder-cover-wrapper skeleton-loader"></div>
+              <div class="preorder-details" style="gap: 1rem;">
+                <div class="skeleton-loader" style="height: 24px; width: 60%;"></div>
+                <div class="skeleton-loader" style="height: 16px; width: 40%;"></div>
+                <div class="skeleton-loader" style="height: 80px; width: 100%;"></div>
+              </div>
+            </div>
+          `).join('')}
+        `;
+        return;
+      }
+
+      let html = filteredPreorders.map(b => renderPreorderCardHtml(b, false)).join('');
+      let extHtml = externalPreorderResults.map(b => renderPreorderCardHtml(b, true)).join('');
+
+      if (!html && !extHtml) {
+        localGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+            <p style="font-size: 1.25rem;">No pre-order titles found matching your search.</p>
+          </div>
+        `;
+        return;
+      }
+
+      localGrid.innerHTML = html + extHtml;
+      bindPreorderListeners();
+    };
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 8rem 6rem;">
+      <section class="container fade-in-view" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
-          <span class="section-badge">Upcoming Releases</span>
+          <span class="section-badge">Upcoming & Out of Stock Releases</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem;">Pre-Order Hub</h1>
-          <p style="max-width: 600px;">Be the first to read upcoming masterpieces. Search and secure your pre-order copies from global retailers with shipping options.</p>
+          <p style="max-width: 600px;">Secure your copies of upcoming books or titles currently out of stock. Search and order directly from global retailers with shipping options.</p>
         </div>
 
-        <!-- Preorder search -->
-        <div class="preorder-search-container">
-          <div class="search-wrapper" style="max-width: 100%;">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="preorder-search" placeholder="Search upcoming titles, authors, or series..." value="${preorderSearchQuery}">
+        <div class="preorder-controls-layout" style="display: flex; flex-direction: column; gap: 2rem; width: 100%; max-width: 900px; margin: 0 auto;">
+          
+          <div class="preorder-search-container" style="padding: 2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); backdrop-filter: blur(10px); width: 100%; box-sizing: border-box;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--color-sand); margin-bottom: 1.25rem; text-align: center;">Search Pre-Order Books</h3>
+            <div class="search-form-wrapper" style="display: flex; gap: 1rem; width: 100%; align-items: center; justify-content: center; flex-wrap: nowrap;">
+              <div style="position: relative; flex: 1; max-width: 600px; width: 100%;">
+                <span style="position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 1.1rem;">🔍</span>
+                <input type="text" id="preorder-search" placeholder="Enter book title or author name..." value="${preorderSearchQuery}" style="width: 100%; padding: 0.75rem 1.25rem 0.75rem 2.75rem; border-radius: var(--border-radius-pill); border: 1px solid var(--glass-border); background-color: var(--color-brown-alpha-30); color: var(--color-sand); font-size: 0.95rem; box-sizing: border-box; outline: none; transition: var(--transition-fast);">
+              </div>
+              <button id="btn-preorder-search-submit" style="padding: 0.75rem 2rem; margin-top: 0; min-height: 42px; border-radius: var(--border-radius-pill); font-family: var(--font-sans); font-size: 0.95rem; font-weight: 600; flex-shrink: 0; background-color: var(--accent-color); color: var(--color-sand); border: none; cursor: pointer; transition: var(--transition-fast); display: inline-flex; align-items: center; justify-content: center;">Search</button>
+            </div>
           </div>
-        </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 1.5rem; width: 100%;">
+            <!-- Unified Preorder Listing Grid -->
+            <div class="preorder-grid" id="local-preorder-grid">
+              <!-- Loaded dynamically by renderPreorderResults -->
+            </div>
+          </div>
 
-        <!-- Preorder Listing Grid -->
-        <div class="preorder-grid">
-          ${preorderCardsHtml}
         </div>
       </section>
     `;
 
-    // Attach listeners for card details
-    contentArea.querySelectorAll(".preorder-cover-wrapper, .book-card-title").forEach(el => {
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        showBookDetail(el.dataset.id);
-      });
-    });
-
-    // Attach in-store pre-order buttons
-    contentArea.querySelectorAll(".btn-preorder-add").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const store = btn.dataset.store;
-        const country = btn.dataset.country;
-        const price = parseFloat(btn.dataset.price);
-        addToCart(btn.dataset.id, true, { store, country, price });
-      });
-    });
-
-    // Attach search input listener
-    const searchInput = contentArea.querySelector("#preorder-search");
-    if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        preorderSearchQuery = e.target.value;
-        clearTimeout(window.preorderSearchDebounce);
-        window.preorderSearchDebounce = setTimeout(() => {
-          renderPreOrderView();
-          const newInput = contentArea.querySelector("#preorder-search");
-          if (newInput) {
-            newInput.focus();
-            newInput.setSelectionRange(newInput.value.length, newInput.value.length);
+    // Attach search action
+    const executeSearch = async () => {
+      const searchInput = document.getElementById("preorder-search");
+      if (!searchInput) return;
+      
+      const query = searchInput.value.trim();
+      preorderSearchQuery = query;
+      
+      // Update local grid
+      filteredPreorders = books.filter(b => b.stock === 0 || b.publishedYear >= 2026);
+      if (query) {
+        const q = query.toLowerCase();
+        filteredPreorders = filteredPreorders.filter(b => 
+          b.title.toLowerCase().includes(q) || 
+          b.author.toLowerCase().includes(q)
+        );
+      }
+      
+      // If we have a query, fetch from OpenLibrary
+      if (query.length > 0) {
+        isSearchingExternal = true;
+        renderPreorderResults();
+        
+        try {
+          const results = await window.GoodreadsSync.searchOpenLibrary(query);
+          externalPreorderResults = results.filter(ext => 
+            !books.some(b => b.title.toLowerCase() === ext.title.toLowerCase())
+          );
+        } catch (err) {
+          console.error(err);
+          externalPreorderResults = [];
+        } finally {
+          isSearchingExternal = false;
+          if (currentTab === "preorder" && preorderSearchQuery === query) {
+            renderPreorderResults();
           }
-        }, 150);
+        }
+      } else {
+        externalPreorderResults = [];
+        renderPreorderResults();
+      }
+    };
+
+    const searchInput = document.getElementById("preorder-search");
+    const searchBtn = document.getElementById("btn-preorder-search-submit");
+
+    if (searchBtn) {
+      searchBtn.addEventListener("click", executeSearch);
+    }
+    if (searchInput) {
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          executeSearch();
+        }
       });
     }
+
+    renderPreorderResults();
   };
 
   // RENDER DEDICATED CART VIEW
@@ -2067,8 +2211,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </span>
               ` : ''}
             </div>
-            <p class="book-detail-desc">${book.description}</p>
-            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <div style="display: flex; gap: 1rem; margin-block: 1rem 1.5rem;">
               ${isPreOrder ? `
                 <button class="btn-primary btn-modal-preorder" data-id="${book.id}">
                   Pre-Order
@@ -2079,6 +2222,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </button>
               `}
             </div>
+            <p class="book-detail-desc">${book.description}</p>
           </div>
         </div>
 
@@ -2224,6 +2368,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // Connect global static triggers
+  const logoBrand = document.getElementById("brand-logo");
+  if (logoBrand) {
+    logoBrand.addEventListener("click", (e) => {
+      e.preventDefault();
+      navigateTo("home");
+    });
+  }
   floatingCart.addEventListener("click", openCartDrawer);
   document.querySelector(".cart-close").addEventListener("click", closeCartDrawer);
   cartOverlay.addEventListener("click", (e) => {

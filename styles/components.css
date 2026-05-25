@@ -58,6 +58,28 @@
   align-items: flex-start;
 }
 
+.slide-actions-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+@keyframes fadeInView {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-view {
+  animation: fadeInView 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
 .slide-badge {
   font-size: 0.75rem;
   font-weight: 700;
@@ -2369,6 +2391,15 @@
 @keyframes pulse-step-active {
   0% { transform: scale(1); }
   100% { transform: scale(1.25); }
+}
+
+.preorder-controls-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 3rem;
+  width: 100%;
 }
 
 

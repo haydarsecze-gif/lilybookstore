@@ -76,11 +76,20 @@
   .footer-subscribe-col {
     grid-column: span 2;
   }
+
+  .slide-actions-row {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
   body {
     padding: 0;
+  }
+
+  .profile-dashboard {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .tablet-frame {
@@ -269,6 +278,11 @@
       height: 44px;
     }
   }
+
+  .preorder-controls-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -316,5 +330,15 @@
   .chat-bubble-header {
     gap: 0.5rem !important;
     font-size: 0.72rem !important;
+  }
+
+  .slide-actions-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .slide-actions-row button {
+    width: 100%;
   }
 }
