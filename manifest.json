@@ -1,0 +1,30 @@
+{
+  "name": "Lily Bookstore",
+  "short_name": "Lily Books",
+  "description": "Curated reading collection & community book club chat.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#024644",
+  "theme_color": "#024644",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/logo_light.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -22,6 +22,16 @@ document.addEventListener("DOMContentLoaded", () => {
   
   let isLoadingScrape = false;
 
+  // Stagger animations runtime fallback
+  const applyStaggerIndices = (container) => {
+    if (!container) return;
+    if (!CSS.supports('animation-delay: calc(sibling-index() * 0.1s)')) {
+      Array.from(container.children).forEach((child, idx) => {
+        child.style.setProperty('--sibling-index', idx + 1);
+      });
+    }
+  };
+
   // --- MEMBERSHIP TIER HELPERS ---
   const calculateTotalSpent = (user) => {
     if (!user || !user.orders) return 0;
@@ -285,14 +295,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isLoadingScrape) {
       // Render Skeleton Loaders while scraping
       contentArea.innerHTML = `
-        <section class="hero-slider-section" style="justify-content: center; align-items: center;">
+        <section class="hero-slider-section fade-in-view" style="justify-content: center; align-items: center;">
           <div class="container" style="text-align: center;">
             <div class="skeleton-loader" style="width: 150px; height: 30px; margin: 0 auto 1.5rem;"></div>
             <div class="skeleton-loader" style="width: 350px; height: 50px; margin: 0 auto 2.5rem;"></div>
             <div class="skeleton-loader" style="width: 100%; height: 300px;"></div>
           </div>
         </section>
-        <section class="container" style="padding-block: 4rem;">
+        <section class="container fade-in-view" style="padding-block: 4rem;">
           <div class="section-header">
             <h2>Curated for You</h2>
           </div>
@@ -374,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     contentArea.innerHTML = `
       <!-- Hero Carousel Slider (No Arrow Buttons, Frosted Layout) -->
-      <section class="hero-slider-section">
+      <section class="hero-slider-section fade-in-view">
         <!-- Blurred backgrounds stack -->
         <div class="slider-bg-blur-container">
           ${upcomingBooks.map((book, idx) => `
@@ -393,23 +403,23 @@ document.addEventListener("DOMContentLoaded", () => {
       </section>
 
       <!-- Hot Picks 2026 Grid (First Section) -->
-      <section class="container" style="padding-block: 4rem 2rem;">
+      <section class="container fade-in-view" style="padding-block: 4rem 2rem;">
         <div class="section-header">
           <span class="section-badge">Upcoming Trends</span>
           <h2>Trending Picks 2026</h2>
         </div>
-        <div class="books-grid">
+        <div class="books-grid" id="hot-picks-grid">
           ${hotPicksHtml}
         </div>
       </section>
 
       <!-- Curated For You Grid (Second Section) -->
-      <section class="container" style="padding-block: 2rem 5rem;">
+      <section class="container fade-in-view" style="padding-block: 2rem 5rem;">
         <div class="section-header">
           <span class="section-badge">Top Recommendations</span>
           <h2>Curated for You</h2>
         </div>
-        <div class="books-grid">
+        <div class="books-grid" id="curated-grid">
           ${curatedHtml}
         </div>
       </section>
@@ -417,6 +427,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     attachBookCardListeners();
     attachSliderListeners();
+    applyStaggerIndices(document.getElementById("hot-picks-grid"));
+    applyStaggerIndices(document.getElementById("curated-grid"));
   };
 
   // RENDER BROWSE VIEW
@@ -431,7 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 8rem 6rem;">
+      <section class="container fade-in-view" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Catalog</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem);">Browse Library</h1>
@@ -513,6 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `).join('')}
       `;
+      applyStaggerIndices(booksGrid);
       return;
     }
 
@@ -528,6 +541,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     booksGrid.innerHTML = localHtml + extHtml;
+    applyStaggerIndices(booksGrid);
     attachBookCardListeners();
   };
 
@@ -851,7 +865,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderCartView = () => {
     if (cart.length === 0) {
       contentArea.innerHTML = `
-        <section class="container" style="padding-block: 10rem 6rem; text-align: center;">
+        <section class="container fade-in-view" style="padding-block: 10rem 6rem; text-align: center;">
           <div style="font-size: 4rem; color: var(--accent-color); margin-bottom: 1.5rem; opacity: 0.6;">🛒</div>
           <h1 style="font-size: 2rem; margin-bottom: 1rem;">Your Cart is Empty</h1>
           <p style="margin-bottom: 2rem;">Looks like you haven't added any books to your cart yet.</p>
@@ -914,7 +928,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalVal = subtotalVal - discountVal + deliveryFee;
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 8rem 6rem;">
+      <section class="container fade-in-view" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Checkout</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem);">Your Shopping Cart</h1>
@@ -1053,6 +1067,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     attachCartPageListeners();
+    applyStaggerIndices(document.querySelector(".cart-items-panel"));
   };
 
   // RENDER COMMUNITY VIEW
@@ -1095,7 +1110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 8rem 6rem;">
+      <section class="container fade-in-view" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Community Portal</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem;">Community Chat & Requests</h1>
@@ -1139,7 +1154,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Scroll chat to bottom
     const chatContainer = document.getElementById("chat-messages-container");
-    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    applyStaggerIndices(document.getElementById("requests-list-container"));
+    applyStaggerIndices(document.getElementById("chat-messages-container"));
 
     // Attach chat send listener
     const chatForm = document.getElementById("chat-send-form");
@@ -1281,7 +1300,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // RENDER ABOUT VIEW
   const renderAboutView = () => {
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 10rem 8rem; max-width: 800px; text-align: center;">
+      <section class="container fade-in-view" style="padding-block: 10rem 8rem; max-width: 800px; text-align: center;">
         <div class="section-header" style="margin-bottom: 2rem;">
           <span class="section-badge">Our Story</span>
           <h1>About Lily Bookstore</h1>
@@ -1312,7 +1331,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const renderAuthForms = () => {
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 8rem 6rem;">
+      <section class="container fade-in-view" style="padding-block: 8rem 6rem;">
         <div class="auth-container">
           <div class="auth-tabs">
             <button class="auth-tab-btn ${authTab === 'login' ? 'active' : ''}" id="tab-login-btn">Log In</button>
@@ -1639,7 +1658,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     contentArea.innerHTML = `
-      <section class="container" style="padding-block: 8rem 6rem;">
+      <section class="container fade-in-view" style="padding-block: 8rem 6rem;">
         <div class="section-header" style="margin-block: 0 3rem; text-align: left;">
           <span class="section-badge">Dashboard</span>
           <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem;">Your Profile</h1>
@@ -2590,4 +2609,72 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // --- PROGRESSIVE WEB APP (PWA) INSTALL BANNER LOGIC ---
+  let deferredPrompt = null;
+  const pwaBanner = document.getElementById("pwa-banner");
+  const btnPwaInstall = document.getElementById("btn-pwa-install");
+  const btnPwaDismiss = document.getElementById("btn-pwa-dismiss");
+
+  const showInstallUI = () => {
+    if (localStorage.getItem("pwa-dismissed") === "true") return;
+    if (pwaBanner) {
+      pwaBanner.classList.add("show");
+    }
+  };
+
+  const hideInstallUI = () => {
+    if (pwaBanner) {
+      pwaBanner.classList.remove("show");
+    }
+  };
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Update UI to show the install button/option
+    showInstallUI();
+  });
+
+  if (btnPwaInstall) {
+    btnPwaInstall.addEventListener("click", () => {
+      if (!deferredPrompt) return;
+      // Show the install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the install prompt");
+        } else {
+          console.log("User dismissed the install prompt");
+        }
+        deferredPrompt = null;
+        hideInstallUI();
+      });
+    });
+  }
+
+  if (btnPwaDismiss) {
+    btnPwaDismiss.addEventListener("click", () => {
+      hideInstallUI();
+      localStorage.setItem("pwa-dismissed", "true");
+    });
+  }
+
+  window.addEventListener("appinstalled", (e) => {
+    console.log("PWA was installed");
+    hideInstallUI();
+    deferredPrompt = null;
+  });
+
+  // Register Service Worker
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js")
+        .then((reg) => console.log("Service Worker registered successfully!", reg))
+        .catch((err) => console.error("Service Worker registration failed:", err));
+    });
+  }
 });

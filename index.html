@@ -11,11 +11,27 @@
   <link rel="stylesheet" href="styles/main.css?v=4">
   <link rel="stylesheet" href="styles/components.css?v=4">
   <link rel="stylesheet" href="styles/responsive.css?v=4">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
   <!-- Floating Tablet Frame Wrapper -->
   <div class="tablet-frame">
+
+    <!-- PWA Installation Banner -->
+    <div class="pwa-install-banner" id="pwa-banner" role="dialog" aria-label="Install App">
+      <div class="pwa-banner-content">
+        <img src="assets/icons/icon-192.png" alt="Lily Bookstore Logo" class="pwa-banner-logo">
+        <div class="pwa-banner-text">
+          <h4>Install Lily Bookstore</h4>
+          <p>Add to your home screen for quick offline access</p>
+        </div>
+      </div>
+      <div class="pwa-banner-actions">
+        <button class="btn-primary pwa-install-btn" id="btn-pwa-install">Install</button>
+        <button class="pwa-dismiss-btn" id="btn-pwa-dismiss" aria-label="Dismiss banner">Dismiss</button>
+      </div>
+    </div>
 
     <!-- Navigation Bar -->
     <header class="navbar">

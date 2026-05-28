@@ -2471,6 +2471,293 @@
   transform: scale(1.08);
 }
 
+/* ==========================================
+   DYNAMIC WEB ANIMATIONS SYSTEM
+   ========================================== */
+
+/* Staggered sibling reveal animations */
+.stagger-item,
+.book-card,
+.request-item,
+.chat-bubble,
+.cart-table-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: staggerReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--sibling-index, 1) * 0.05s);
+  animation-delay: calc(sibling-index() * 0.05s);
+}
+
+@keyframes staggerReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover interactions on cards */
+.book-card,
+.preorder-card,
+.collect-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.4s ease, 
+              border-color 0.4s ease;
+}
+
+.book-card:hover,
+.preorder-card:hover,
+.collect-card:hover {
+  transform: translateY(-8px) scale(1.015);
+  box-shadow: 0 12px 30px var(--color-brown-alpha-90), 0 0 15px var(--color-teal-alpha-50);
+  border-color: var(--glass-border-focus);
+}
+
+/* Image zoom inside wrapper */
+.book-card-cover-wrapper {
+  overflow: hidden;
+  border-radius: var(--border-radius-md);
+}
+
+.book-card:hover .book-card-cover-wrapper img {
+  transform: scale(1.06);
+}
+
+.book-card-cover-wrapper img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Button hover lifts & active depress states */
+.btn-primary,
+.btn-sync,
+.btn-card,
+.subscribe-btn,
+.subscribe-input {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.3s ease, 
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+}
+
+.btn-primary:hover,
+.btn-sync:hover,
+.btn-card:hover,
+.subscribe-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--color-teal-alpha-50);
+}
+
+.btn-primary:active,
+.btn-sync:active,
+.btn-card:active,
+.subscribe-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px var(--color-teal-alpha-50);
+}
+
+/* Cart Drawer Spring Transitions */
+.cart-drawer {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Detail modal opening/closing transitions using discrete entry/exit */
+.dialog-modal {
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    overlay 0.4s,
+    display 0.4s;
+  transition-behavior: allow-discrete;
+}
+
+.dialog-modal[open] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@starting-style {
+  .dialog-modal[open] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* Modal Dialog Backdrop Transition */
+.dialog-modal::backdrop {
+  background-color: rgba(2, 70, 68, 0);
+  backdrop-filter: blur(0px);
+  transition:
+    background-color 0.4s ease,
+    backdrop-filter 0.4s ease,
+    overlay 0.4s,
+    display 0.4s;
+  transition-behavior: allow-discrete;
+}
+
+.dialog-modal[open]::backdrop {
+  background-color: rgba(2, 70, 68, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+@starting-style {
+  .dialog-modal[open]::backdrop {
+    background-color: rgba(2, 70, 68, 0);
+    backdrop-filter: blur(0px);
+  }
+}
+
+/* ==========================================
+   PWA INSTALL BANNER
+   ========================================== */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  background: rgba(75, 54, 33, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 1100;
+  max-width: 450px;
+  width: calc(100% - 4rem);
+  
+  /* Entrance Animations */
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    display 0.4s;
+  transition-behavior: allow-discrete;
+}
+
+.pwa-install-banner.show {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@starting-style {
+  .pwa-install-banner.show {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+}
+
+.pwa-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pwa-banner-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--border-radius-sm);
+  object-fit: contain;
+  border: 1px solid var(--glass-border);
+  background: var(--color-teal);
+}
+
+.pwa-banner-text h4 {
+  font-size: 1rem;
+  margin-bottom: 2px;
+  font-family: var(--font-sans);
+  color: var(--color-sand);
+  font-weight: 700;
+}
+
+.pwa-banner-text p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pwa-dismiss-btn {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  transition: color 0.2s ease;
+}
+
+.pwa-dismiss-btn:hover {
+  color: var(--color-sand);
+}
+
+/* Responsive Mobile PWA Top Banner Override */
+@media (max-width: 768px) {
+  .pwa-install-banner {
+    top: 0;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding: 0.75rem 1rem;
+    
+    /* Top Slide-Down Entrance Animations override */
+    transform: translateY(-100%);
+  }
+
+  .pwa-install-banner.show {
+    transform: translateY(0);
+  }
+
+  @starting-style {
+    .pwa-install-banner.show {
+      transform: translateY(-100%);
+    }
+  }
+}
+
+/* Respect User Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  .stagger-item,
+  .book-card,
+  .request-item,
+  .chat-bubble,
+  .cart-table-item,
+  .dialog-modal,
+  .dialog-modal::backdrop,
+  .pwa-install-banner,
+  .btn-primary,
+  .btn-sync,
+  .btn-card,
+  .subscribe-btn,
+  .cart-drawer {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  
+  .book-card:hover .book-card-cover-wrapper img {
+    transform: none !important;
+  }
+}
+
 
 
 
