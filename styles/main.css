@@ -184,10 +184,14 @@ body {
   position: absolute;
   background-color: var(--accent-color);
   border-radius: var(--border-radius-pill);
-  transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: opacity 0.25s ease, left 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s cubic-bezier(0.25, 1, 0.5, 1), top 0.35s cubic-bezier(0.25, 1, 0.5, 1), height 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 0;
   pointer-events: none;
-  display: none;
+  opacity: 0;
+}
+
+.nav-indicator.visible {
+  opacity: 1;
 }
 
 .nav-item {

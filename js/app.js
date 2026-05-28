@@ -184,11 +184,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeLink && indicator) {
       const navItem = activeLink.closest(".nav-item");
       if (navItem) {
-        indicator.style.display = "block";
         indicator.style.left = `${navItem.offsetLeft}px`;
         indicator.style.width = `${navItem.offsetWidth}px`;
         indicator.style.top = `${navItem.offsetTop}px`;
         indicator.style.height = `${navItem.offsetHeight}px`;
+        indicator.classList.add("visible");
       }
     }
   };
@@ -2530,6 +2530,7 @@ document.addEventListener("DOMContentLoaded", () => {
   navigateTo("home");
 
   window.addEventListener("resize", updateNavIndicator);
+  window.addEventListener("load", updateNavIndicator);
 
 
 
