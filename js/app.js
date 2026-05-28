@@ -1312,8 +1312,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <p style="font-size: 1.15rem; margin-bottom: 2rem; line-height: 1.8;">
           Lily Bookstore is a modern digital sanctuary for book lovers. Established in 2026, we curate premium literature across romance, thrillers, and contemporary novels. Our goal is to bring reader communities closer together through beautifully crafted web experiences.
         </p>
-        <p style="font-size: 1rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.8;">
+        <p style="font-size: 1rem; margin-bottom: 2rem; color: var(--text-muted); line-height: 1.8;">
           By leveraging Goodreads integrations, Lily Bookstore allows readers to easily carry over their personal shelves and digital libraries, creating a unified showcase of their favorite reading materials.
+        </p>
+        <p style="font-size: 0.95rem; margin-bottom: 3rem; color: var(--accent-color); font-weight: 600; line-height: 1.6;">
+          Created by Ratha Nit. Rights owned by Ratha Nit.
         </p>
         <div style="display: flex; justify-content: center; gap: 1rem;">
           <button class="btn-primary" id="about-browse-btn">Browse the Catalog</button>
