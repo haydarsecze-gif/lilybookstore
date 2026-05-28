@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lily-bookstore-v2';
+const CACHE_NAME = 'lily-bookstore-v3';
 const ASSETS = [
   './',
   './index.html',

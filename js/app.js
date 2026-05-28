@@ -2333,7 +2333,7 @@ document.addEventListener("DOMContentLoaded", () => {
       { reviewer: "David P.", rating: 4, comment: "Very well written, kept me turning the pages late into the night.", tier: "Bronze Reader", isVerified: true },
       { reviewer: "Emma W.", rating: 3, comment: "It was a decent read. Good pacing, though some plot points felt predictable.", tier: "Guest", isVerified: false }
     ];
-    const reviewsToRender = book.reviews || defaultReviews;
+    const reviewsToRender = (book.reviews && book.reviews.length > 0) ? book.reviews : defaultReviews;
     let reviewsHtml = "";
     reviewsToRender.forEach(rev => {
       const userTier = rev.tier || "Bronze Reader";
