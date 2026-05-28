@@ -184,8 +184,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeLink && indicator) {
       const navItem = activeLink.closest(".nav-item");
       if (navItem) {
-        indicator.style.left = `${navItem.offsetLeft}px`;
-        indicator.style.width = `${navItem.offsetWidth}px`;
+        const newLeft = navItem.offsetLeft;
+        const newWidth = navItem.offsetWidth;
+        const parentWidth = navItem.parentElement.offsetWidth;
+        const newRight = parentWidth - (newLeft + newWidth);
+
+        const currentLeft = parseFloat(indicator.style.left) || 0;
+
+        indicator.classList.remove("slide-left", "slide-right");
+        if (indicator.classList.contains("visible")) {
+          if (newLeft > currentLeft) {
+            indicator.classList.add("slide-right");
+          } else if (newLeft < currentLeft) {
+            indicator.classList.add("slide-left");
+          }
+        }
+
+        indicator.style.left = `${newLeft}px`;
+        indicator.style.right = `${newRight}px`;
         indicator.style.top = `${navItem.offsetTop}px`;
         indicator.style.height = `${navItem.offsetHeight}px`;
         indicator.classList.add("visible");
