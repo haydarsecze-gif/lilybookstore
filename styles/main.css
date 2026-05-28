@@ -125,7 +125,7 @@ body {
 
 /* Navigation Header */
 .navbar {
-  position: absolute;
+  position: fixed;
   top: 1.5rem;
   left: 50%;
   transform: translateX(-50%);

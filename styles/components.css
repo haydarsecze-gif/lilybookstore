@@ -795,6 +795,11 @@
   border-radius: 50%;
   font-size: 1rem;
   color: var(--color-sand);
+  z-index: 100;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dialog-close-btn:hover {
@@ -968,7 +973,9 @@
 .input-text {
   background-color: var(--color-teal-alpha-50);
   border: 1px solid var(--color-sand-alpha-15);
-  padding: 0.85rem 1.25rem;
+  padding: 0 1.25rem;
+  height: 48px;
+  line-height: normal;
   border-radius: var(--border-radius-pill);
   color: var(--color-sand);
   width: 100%;
@@ -987,7 +994,8 @@
   background-color: var(--accent-color);
   color: var(--color-sand);
   font-weight: 600;
-  padding: 0.85rem 2rem;
+  height: 48px;
+  padding: 0 2rem;
   border-radius: var(--border-radius-pill);
 }
 
@@ -2401,6 +2409,64 @@
   margin-bottom: 3rem;
   width: 100%;
 }
+
+/* ==========================================
+   ALTERNATIVE COVERS PICKER
+   ========================================== */
+.alt-covers-picker-section {
+  margin-top: 1.25rem;
+  width: 100%;
+  background: rgba(231, 215, 193, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-md);
+  padding: 0.85rem;
+  text-align: center;
+}
+
+.alt-covers-picker-title {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.alt-covers-list {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.alt-cover-thumb {
+  width: 42px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--border-radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.alt-cover-thumb:hover {
+  transform: scale(1.15) translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  border-color: rgba(231, 215, 193, 0.6);
+}
+
+.alt-cover-thumb.active {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+  transform: scale(1.08);
+}
+
 
 
 

@@ -62,7 +62,7 @@ const GoodreadsSync = {
       const author = row[authorIndex] || "Unknown Author";
       const isbn = (row[isbn13Index] || row[isbnIndex] || "").replace(/[^0-9X]/g, "");
       
-      let cover = "assets/fever_dream.png";
+      let cover = "";
       if (isbn) {
         cover = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
       }
@@ -144,7 +144,7 @@ const GoodreadsSync = {
         if (isbn) {
           cover = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
         } else {
-          cover = "assets/fever_dream.png";
+          cover = "";
         }
       }
       
@@ -220,7 +220,7 @@ const GoodreadsSync = {
           }
           
           if (!cover || cover.includes("nophoto")) {
-            cover = "assets/fever_dream.png";
+            cover = "";
           }
           
           // Parse rating: e.g. "4.12 avg rating — 2,123,456 ratings"
@@ -272,7 +272,7 @@ const GoodreadsSync = {
     const data = await response.json();
     const docs = data.docs || [];
     const books = [];
-    const categories = ["Romance", "Thriller", "New Arrivals"];
+    const categories = ["Romance", "Thriller"];
     
     docs.forEach((doc, index) => {
       if (!doc.title || !doc.author_name) return;
@@ -280,7 +280,7 @@ const GoodreadsSync = {
       const title = doc.title;
       const author = doc.author_name[0];
       
-      let cover = "assets/fever_dream.png";
+      let cover = "";
       if (doc.cover_i) {
         cover = `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg`;
       } else if (doc.isbn && doc.isbn.length > 0) {
@@ -291,16 +291,23 @@ const GoodreadsSync = {
       const rating = Math.round(doc.ratings_average) || 4;
       const price = parseFloat((11.99 + (index % 5) * 2.00).toFixed(2));
       
+      const publishedYear = doc.first_publish_year || 2024;
+      const isPre = (publishedYear >= 2026);
+      
       books.push({
         id: id,
         title: title,
         author: author,
-        category: categories[index % categories.length],
+        category: isPre ? "New Arrivals" : categories[index % categories.length],
         rating: rating,
         price: price,
         cover: cover,
         description: doc.first_sentence ? doc.first_sentence[0] : `A literary work found via OpenLibrary search: ${title} by ${author}.`,
-        isGoodreadsImport: true
+        isGoodreadsImport: true,
+        isbns: doc.isbn || [],
+        cover_i: doc.cover_i,
+        publishedYear: publishedYear,
+        isPreorder: isPre
       });
     });
     

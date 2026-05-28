@@ -58,6 +58,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- LOCAL STORAGE SYNCRONIZATION ---
   const loadState = () => {
     try {
+      // Clear old database cache on version upgrade to display new books cleanly
+      const CATALOG_VERSION = "v7";
+      const savedVersion = localStorage.getItem("lily_catalog_version");
+      if (savedVersion !== CATALOG_VERSION) {
+        localStorage.removeItem("lily_imported_books");
+        localStorage.removeItem("lily_modified_covers");
+        localStorage.removeItem("lily_ol_metadata");
+        localStorage.setItem("lily_catalog_version", CATALOG_VERSION);
+      }
+
       const savedCart = localStorage.getItem("lily_cart");
       if (savedCart) cart = JSON.parse(savedCart);
       
@@ -82,6 +92,31 @@ document.addEventListener("DOMContentLoaded", () => {
           const book = books.find(b => b.id === bookId);
           if (book) {
             book.reviews = customReviews[bookId];
+          }
+        });
+      }
+
+      // Load custom modified covers overlay
+      const savedCovers = localStorage.getItem("lily_modified_covers");
+      if (savedCovers) {
+        const customCovers = JSON.parse(savedCovers);
+        Object.keys(customCovers).forEach(bookId => {
+          const book = books.find(b => b.id === bookId);
+          if (book) {
+            book.cover = customCovers[bookId];
+          }
+        });
+      }
+
+      // Load OL metadata cache
+      const savedMetadata = localStorage.getItem("lily_ol_metadata");
+      if (savedMetadata) {
+        const olMetadata = JSON.parse(savedMetadata);
+        Object.keys(olMetadata).forEach(bookId => {
+          const book = books.find(b => b.id === bookId);
+          if (book) {
+            book.cover_i = olMetadata[bookId].cover_i;
+            book.isbns = olMetadata[bookId].isbns;
           }
         });
       }
@@ -211,6 +246,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Mobile menu toggle
   navToggle.addEventListener("click", () => {
     navLinks.classList.toggle("open");
+  });
+
+  // Close mobile menu when clicking outside
+  document.addEventListener("click", (e) => {
+    if (navLinks.classList.contains("open") && !navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+      navLinks.classList.remove("open");
+    }
+  });
+
+  // Close mobile menu on Escape key press
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && navLinks.classList.contains("open")) {
+      navLinks.classList.remove("open");
+    }
   });
 
   // --- UI COMPONENT RENDERERS ---
@@ -419,7 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!booksGrid) return;
 
     // Filter books locally
-    let filteredBooks = books.filter(b => !(b.category === "New Arrivals" || b.publishedYear >= 2026));
+    let filteredBooks = books.filter(b => !(b.category === "New Arrivals" || b.publishedYear >= 2026 || b.isPreorder || (!b.isGoodreadsImport && b.stock === undefined)));
     if (currentFilter !== "All Books") {
       filteredBooks = filteredBooks.filter(b => b.category === currentFilter);
     }
@@ -478,7 +527,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const results = await window.GoodreadsSync.searchOpenLibrary(q);
           // Filter out duplicates (books already in local books array)
           browseExternalResults = results.filter(ext => 
-            !books.some(b => b.title.toLowerCase() === ext.title.toLowerCase())
+            !ext.isPreorder && !books.some(b => b.title.toLowerCase() === ext.title.toLowerCase())
           );
         } catch (err) {
           console.error(err);
@@ -502,8 +551,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // RENDER DEDICATED PRE-ORDER HUB VIEW
   const renderPreOrderView = () => {
-    // Eligible local preorders: out of stock, or upcoming
-    let eligibleLocalPreorders = books.filter(b => b.stock === 0 || b.publishedYear >= 2026);
+    // Eligible local preorders: out of stock, or upcoming, or manually pre-ordered
+    let eligibleLocalPreorders = books.filter(b => b.stock === 0 || b.publishedYear >= 2026 || b.isPreorder);
     
     // Reset or keep filtered list
     let filteredPreorders = [...eligibleLocalPreorders];
@@ -605,6 +654,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 showBookDetail(localBook.id);
               } else {
                 if (!books.some(b => b.id === book.id)) {
+                  book.isPreorder = true;
                   books.push(book);
                   saveImportedBooks(books);
                 }
@@ -640,6 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const localBook = books.find(b => b.title.toLowerCase() === book.title.toLowerCase());
             const targetId = localBook ? localBook.id : book.id;
             if (!localBook && !books.some(b => b.id === book.id)) {
+              book.isPreorder = true;
               books.push(book);
               saveImportedBooks(books);
             }
@@ -2299,18 +2350,20 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="dialog-modal-content">
         <button class="dialog-close-btn" aria-label="Close details">✕</button>
         <div class="book-detail-layout">
-          ${book.cover ? `
-            <img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="book-detail-cover" alt="${book.title} Cover" />
-            <div class="book-detail-cover-placeholder" style="display: none;">
-              <span class="book-card-no-cover-title" style="font-size: 1.4rem; margin-bottom: 0.75rem;">${book.title}</span>
-              <span class="book-card-no-cover-author" style="font-size: 0.95rem;">by ${book.author}</span>
+          <div class="book-detail-cover-column" style="display: flex; flex-direction: column; gap: 1.25rem; align-items: center; width: 100%;">
+            <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
+              <img src="${book.cover ? getCoverUrl(book.cover) : ''}" 
+                   referrerpolicy="no-referrer" 
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                   class="book-detail-cover" 
+                   alt="${book.title} Cover" 
+                   style="${book.cover ? '' : 'display: none;'}" />
+              <div class="book-detail-cover-placeholder" style="${book.cover ? 'display: none;' : 'display: flex;'}">
+                <span class="book-card-no-cover-title" style="font-size: 1.4rem; margin-bottom: 0.75rem;">${book.title}</span>
+                <span class="book-card-no-cover-author" style="font-size: 0.95rem;">by ${book.author}</span>
+              </div>
             </div>
-          ` : `
-            <div class="book-detail-cover-placeholder">
-              <span class="book-card-no-cover-title" style="font-size: 1.4rem; margin-bottom: 0.75rem;">${book.title}</span>
-              <span class="book-card-no-cover-author" style="font-size: 0.95rem;">by ${book.author}</span>
-            </div>
-          `}
+          </div>
           <div class="book-detail-body">
             <h2 class="book-detail-title" style="text-align: left; margin-bottom: 0.5rem;">${book.title}</h2>
             <p class="book-detail-author">by ${book.author}</p>
@@ -2325,7 +2378,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </span>
               ` : ''}
             </div>
-            <div style="display: flex; gap: 1rem; margin-block: 1rem 1.5rem;">
+            <div class="book-detail-actions" style="display: flex; gap: 1rem; margin-block: 1rem 1.5rem;">
               ${isPreOrder ? `
                 <button class="btn-primary btn-modal-preorder" data-id="${book.id}">
                   Pre-Order
@@ -2447,7 +2500,6 @@ document.addEventListener("DOMContentLoaded", () => {
         bookDialog.close();
       });
     }
-    
     bookDialog.showModal();
   };
 

@@ -11,7 +11,7 @@
     grid-template-columns: 1fr;
     gap: 1.5rem;
     text-align: center;
-    padding-block: 2rem;
+    padding-block: 2rem 4.5rem; /* Reserve padding bottom to prevent absolute slider-dots overlap */
   }
 
   .slide-content {
@@ -99,7 +99,7 @@
   }
 
   .navbar {
-    position: absolute;
+    position: fixed; /* Sticky fixed header */
     left: 50%;
     transform: translateX(-50%);
     margin: 0;
@@ -108,12 +108,27 @@
     height: 56px;
     padding: 0.5rem 1.25rem;
     border-radius: 20px;
+    z-index: 100;
+  }
+
+  /* Hide indicator on mobile navigation */
+  .nav-indicator {
+    display: none !important;
+  }
+
+  .nav-link.active {
+    background-color: var(--accent-subtle) !important;
+    color: var(--accent-color) !important;
   }
 
   /* Hamburger Navigation */
   .nav-toggle {
-    display: block;
+    display: flex;
     cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
   }
 
   .nav-links {
@@ -161,8 +176,7 @@
   }
 
   .chat-panel, .request-panel {
-    height: auto !important;
-    min-height: 400px;
+    height: 500px !important; /* Keep logs scrollable locally on mobile */
     padding: 1.25rem;
   }
 
@@ -187,8 +201,11 @@
     align-items: stretch;
   }
 
+  /* Overwrite flex-basis height stretching bug in column layout */
   .search-wrapper {
-    max-width: none;
+    flex: none !important;
+    width: 100% !important;
+    max-width: none !important;
   }
 
   .footer-content {
@@ -230,12 +247,48 @@
     justify-content: center;
   }
 
+  .book-detail-title {
+    text-align: center !important;
+  }
+
+  .book-detail-actions {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  .book-detail-actions button {
+    width: 100% !important;
+    max-width: 320px !important;
+  }
+
+  .detail-stock-badge {
+    margin-left: 0 !important;
+  }
+
+  .book-reviews-title {
+    text-align: center !important;
+  }
+
   .sync-form-row {
     grid-template-columns: 1fr;
   }
 
   .dialog-modal-content {
     padding: 1.5rem;
+  }
+
+  /* Sizable modal close button overlay for mobile touches */
+  .dialog-close-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.25rem !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 100 !important;
   }
 
   .goodreads-sync-container {
@@ -250,38 +303,55 @@
     padding: 1.25rem;
   }
 
+  /* Cart Page Grid layout fix for mobile */
   .cart-table-item {
+    display: grid;
     grid-template-columns: 60px 1fr;
-    gap: 1rem;
+    grid-template-rows: auto auto;
+    gap: 0.75rem 1rem;
   }
 
   .cart-table-cover {
     width: 60px;
     height: 90px;
+    grid-row: span 2;
   }
 
-  .cart-table-actions {
-    grid-column: span 2;
-    justify-content: space-between;
-    margin-top: 0.5rem;
+  .cart-table-details {
+    grid-column: 2;
+    grid-row: 1;
   }
 
-  /* Coarse touch targets */
-  @media (pointer: coarse) {
-    .filter-btn, .nav-link, .btn-card, .cart-qty-btn, .btn-sync, .btn-primary {
-      padding-block: 0.8rem;
-      min-height: 48px;
-    }
+  .cart-table-item > span { /* Price label */
+    grid-column: 2;
+    grid-row: 2;
+    text-align: right;
+    align-self: end;
+  }
 
-    .dialog-close-btn {
-      width: 44px;
-      height: 44px;
-    }
+  /* Touch accessibility target sizes */
+  .filter-btn, .nav-link, .btn-card, .cart-qty-btn, .btn-primary {
+    padding-block: 0.8rem;
+    min-height: 48px;
   }
 
   .preorder-controls-layout {
     grid-template-columns: 1fr !important;
     gap: 2rem;
+  }
+
+  /* Preorder search field wrapping */
+  .search-form-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .search-form-wrapper > div {
+    max-width: none !important;
+  }
+
+  .search-form-wrapper button {
+    width: 100% !important;
   }
 }
 
@@ -318,9 +388,10 @@
     width: 146px !important;
   }
 
-  .slide-cover-stack {
-    width: 180px;
-    height: 270px;
+  /* Matching dimensions for cover art inside home view slider */
+  .slide-cover-stack, .slide-cover-main {
+    width: 140px !important;
+    height: 210px !important;
   }
 
   .slide-title {
