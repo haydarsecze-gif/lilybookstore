@@ -329,9 +329,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let dotsHtml = "";
     upcomingBooks.forEach((book, idx) => {
       const isPreOrder = book.category === "New Arrivals" || book.publishedYear >= 2026;
+      const isFirst = idx === 0;
+      const fetchAttr = isFirst ? 'fetchpriority="high"' : 'loading="lazy"';
       const coverStackHtml = book.cover 
-        ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none';" class="slide-cover-bg" alt="" />
-           <img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="slide-cover-main" alt="${book.title} Cover" />
+        ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none';" class="slide-cover-bg" alt="" ${fetchAttr} />
+           <img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="slide-cover-main" alt="${book.title} Cover" ${fetchAttr} />
            <div class="book-detail-cover-placeholder" style="display: none; width: 260px; height: 380px; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
              <div class="book-card-no-cover-title" style="font-size: 1.5rem; margin-bottom: 1rem;">${book.title}</div>
              <div class="book-card-no-cover-author" style="font-size: 1rem;">by ${book.author}</div>
@@ -2676,5 +2678,21 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((reg) => console.log("Service Worker registered successfully!", reg))
         .catch((err) => console.error("Service Worker registration failed:", err));
     });
+  }
+
+  // --- CONNECTION STATUS MONITORS ---
+  window.addEventListener("online", () => {
+    showToast("Internet connection restored. Back online!", "success");
+  });
+
+  window.addEventListener("offline", () => {
+    showToast("Connection lost. Working offline using cached pages.", "error");
+  });
+
+  if (!navigator.onLine) {
+    // Small delay to allow the layout components to mount first
+    setTimeout(() => {
+      showToast("You are currently offline. Served from local cache.", "error");
+    }, 1500);
   }
 });

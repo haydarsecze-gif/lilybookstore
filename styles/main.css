@@ -258,6 +258,8 @@ body {
   padding-block: 4rem 2rem;
   flex-shrink: 0;
   border-top: 1px solid var(--glass-border);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 350px;
 }
 
 .footer-content {
