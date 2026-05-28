@@ -185,10 +185,10 @@ body {
   background-color: var(--accent-color);
   border-radius: var(--border-radius-pill);
   transition: opacity 0.25s ease,
-              left 0.38s cubic-bezier(0.25, 1, 0.5, 1),
-              right 0.38s cubic-bezier(0.25, 1, 0.5, 1),
-              top 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-              height 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+              left 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+              right 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+              top 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+              height 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 0;
   pointer-events: none;
   opacity: 0;
@@ -201,19 +201,19 @@ body {
 /* Sliding Right: leading edge (right) snaps fast, trailing edge (left) lags and bounces slightly */
 .nav-indicator.slide-right {
   transition: opacity 0.25s ease,
-              left 0.42s cubic-bezier(0.5, 1.6, 0.6, 1) 0.05s,
-              right 0.32s cubic-bezier(0.25, 1, 0.4, 1),
-              top 0.35s ease,
-              height 0.35s ease;
+              left 0.68s cubic-bezier(0.5, 1.6, 0.6, 1) 0.08s,
+              right 0.48s cubic-bezier(0.25, 1, 0.4, 1),
+              top 0.5s ease,
+              height 0.5s ease;
 }
 
 /* Sliding Left: leading edge (left) snaps fast, trailing edge (right) lags and bounces slightly */
 .nav-indicator.slide-left {
   transition: opacity 0.25s ease,
-              left 0.32s cubic-bezier(0.25, 1, 0.4, 1),
-              right 0.42s cubic-bezier(0.5, 1.6, 0.6, 1) 0.05s,
-              top 0.35s ease,
-              height 0.35s ease;
+              left 0.48s cubic-bezier(0.25, 1, 0.4, 1),
+              right 0.68s cubic-bezier(0.5, 1.6, 0.6, 1) 0.08s,
+              top 0.5s ease,
+              height 0.5s ease;
 }
 
 .nav-item {
