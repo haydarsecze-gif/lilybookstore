@@ -2,7 +2,7 @@
 
 @media (max-width: 992px) {
   .hero-slider-section {
-    padding-top: 80px;
+    padding-top: 140px;
     min-height: auto;
     height: auto;
   }
@@ -105,23 +105,27 @@
     margin: 0;
     width: calc(100% - 1.5rem);
     top: 0.75rem;
-    height: 68px;
+    height: 80px;
     padding: 0.5rem 1.25rem;
     border-radius: 20px;
     z-index: 100;
   }
 
+  .hero-slider-section {
+    padding-top: 104px !important;
+  }
+
   .nav-logo {
-    height: 52px !important;
+    height: 64px !important;
   }
 
   .nav-logo-img {
-    max-height: 52px !important;
+    max-height: 64px !important;
   }
 
   .footer-logo-img {
-    max-height: 70px !important;
-    max-width: 180px !important;
+    max-height: 95px !important;
+    max-width: 240px !important;
   }
 
   /* Hide indicator on mobile navigation */
@@ -146,7 +150,7 @@
 
   .nav-links {
     position: fixed;
-    top: 84px;
+    top: 96px;
     left: 1rem;
     right: 1rem;
     background-color: rgba(75, 54, 33, 0.95);
