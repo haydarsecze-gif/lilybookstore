@@ -2124,6 +2124,12 @@
   box-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
 }
 
+.reviewer-tier-badge.guest {
+  background: rgba(120, 110, 90, 0.2);
+  border-color: rgba(120, 110, 90, 0.45);
+  color: var(--color-sand);
+}
+
 .verified-buyer-badge {
   font-family: var(--font-sans);
   font-size: 0.65rem;
@@ -2475,23 +2481,108 @@
    DYNAMIC WEB ANIMATIONS SYSTEM
    ========================================== */
 
-/* Staggered sibling reveal animations */
+/* Page View Transition - Clean, subtle fade-in */
+@keyframes fadeInView {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-view {
+  animation: fadeInView 0.4s ease-out forwards;
+}
+
+/* Horizontal Slide View Transition for Content Area */
+#content-area {
+  view-transition-name: content-area;
+}
+
+::view-transition-old(content-area) {
+  animation: slideOut 0.35s cubic-bezier(0.3, 0, 0.1, 1) forwards;
+}
+
+::view-transition-new(content-area) {
+  animation: slideIn 0.35s cubic-bezier(0.3, 0, 0.1, 1) forwards;
+}
+
+@keyframes slideOut {
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Staggered sibling reveal animations with rotation & zoom */
 .stagger-item,
-.book-card,
+.card-wrapper,
+.preorder-card,
 .request-item,
 .chat-bubble,
-.cart-table-item {
+.cart-table-item,
+.order-history-item {
   opacity: 0;
-  transform: translateY(20px);
-  animation: staggerReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(var(--sibling-index, 1) * 0.05s);
-  animation-delay: calc(sibling-index() * 0.05s);
+  transform: translateY(40px) scale(0.94) rotate(1deg);
+  filter: blur(6px);
+  animation: staggerReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: calc(var(--sibling-index, 1) * 0.06s);
 }
 
 @keyframes staggerReveal {
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+/* Slider Active Element Entrance Slide & Zoom */
+.slide.active .slide-cover-stack {
+  animation: slideCoverIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.slide.active .slide-content > * {
+  opacity: 0;
+  transform: translateX(-40px);
+  animation: slideTextIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .slide-content > .slide-badge { animation-delay: 0.1s; }
+.slide.active .slide-content > .slide-title { animation-delay: 0.18s; }
+.slide.active .slide-content > .slide-meta { animation-delay: 0.26s; }
+.slide.active .slide-content > .slide-desc { animation-delay: 0.34s; }
+.slide.active .slide-content > .slide-actions-row { animation-delay: 0.42s; }
+
+@keyframes slideCoverIn {
+  from {
+    opacity: 0;
+    transform: translateX(120px) scale(0.7) rotate(8deg);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+@keyframes slideTextIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -2507,23 +2598,37 @@
 .book-card:hover,
 .preorder-card:hover,
 .collect-card:hover {
-  transform: translateY(-8px) scale(1.015);
-  box-shadow: 0 12px 30px var(--color-brown-alpha-90), 0 0 15px var(--color-teal-alpha-50);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 35px var(--color-brown-alpha-90), 0 0 20px var(--color-teal-alpha-50);
   border-color: var(--glass-border-focus);
 }
 
-/* Image zoom inside wrapper */
+/* Image zoom inside card cover wrapper */
 .book-card-cover-wrapper {
   overflow: hidden;
   border-radius: var(--border-radius-md);
 }
 
 .book-card:hover .book-card-cover-wrapper img {
-  transform: scale(1.06);
+  transform: scale(1.08);
 }
 
 .book-card-cover-wrapper img {
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Floating animation on brand logo hover */
+@keyframes floatLogo {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.nav-logo-img:hover {
+  animation: floatLogo 2s ease-in-out infinite;
 }
 
 /* Button hover lifts & active depress states */
@@ -2532,7 +2637,7 @@
 .btn-card,
 .subscribe-btn,
 .subscribe-input {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
               background-color 0.3s ease, 
               box-shadow 0.3s ease,
               border-color 0.3s ease;
@@ -2542,44 +2647,48 @@
 .btn-sync:hover,
 .btn-card:hover,
 .subscribe-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--color-teal-alpha-50);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 16px var(--color-teal-alpha-50);
 }
 
 .btn-primary:active,
 .btn-sync:active,
 .btn-card:active,
 .subscribe-btn:active {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.98);
   box-shadow: 0 2px 4px var(--color-teal-alpha-50);
 }
 
 /* Cart Drawer Spring Transitions */
 .cart-drawer {
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Detail modal opening/closing transitions using discrete entry/exit */
+/* Detail modal opening/closing transitions using discrete entry/exit and spring bounce */
 .dialog-modal {
   opacity: 0;
-  transform: scale(0.9);
+  transform: translateY(100px) scale(0.8) rotate(-1.5deg);
+  filter: blur(8px);
   transition:
-    opacity 0.4s ease,
-    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-    overlay 0.4s,
-    display 0.4s;
+    opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 0.5s ease,
+    overlay 0.5s,
+    display 0.5s;
   transition-behavior: allow-discrete;
 }
 
 .dialog-modal[open] {
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(0) scale(1) rotate(0deg);
+  filter: blur(0);
 }
 
 @starting-style {
   .dialog-modal[open] {
     opacity: 0;
-    transform: scale(0.9);
+    transform: translateY(100px) scale(0.8) rotate(-1.5deg);
+    filter: blur(8px);
   }
 }
 
@@ -2588,10 +2697,10 @@
   background-color: rgba(2, 70, 68, 0);
   backdrop-filter: blur(0px);
   transition:
-    background-color 0.4s ease,
-    backdrop-filter 0.4s ease,
-    overlay 0.4s,
-    display 0.4s;
+    background-color 0.5s ease,
+    backdrop-filter 0.5s ease,
+    overlay 0.5s,
+    display 0.5s;
   transition-behavior: allow-discrete;
 }
 
@@ -2633,9 +2742,9 @@
   opacity: 0;
   transform: translateY(30px) scale(0.95);
   transition:
-    opacity 0.4s ease,
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    display 0.4s;
+    opacity 0.5s ease,
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    display 0.5s;
   transition-behavior: allow-discrete;
 }
 
@@ -2746,7 +2855,9 @@
   .btn-sync,
   .btn-card,
   .subscribe-btn,
-  .cart-drawer {
+  .cart-drawer,
+  .slide.active .slide-cover-stack,
+  .slide.active .slide-content > * {
     animation: none !important;
     transition: none !important;
     transform: none !important;

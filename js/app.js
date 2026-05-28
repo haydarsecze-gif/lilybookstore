@@ -22,15 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
   let isLoadingScrape = false;
 
-  // Stagger animations runtime fallback
-  const applyStaggerIndices = (container) => {
-    if (!container) return;
-    if (!CSS.supports('animation-delay: calc(sibling-index() * 0.1s)')) {
-      Array.from(container.children).forEach((child, idx) => {
-        child.style.setProperty('--sibling-index', idx + 1);
-      });
-    }
-  };
+  // Stagger animations runtime fallback (no-op since inline indices are used)
+  const applyStaggerIndices = () => {};
 
   // --- MEMBERSHIP TIER HELPERS ---
   const calculateTotalSpent = (user) => {
@@ -237,28 +230,37 @@ document.addEventListener("DOMContentLoaded", () => {
     // Close mobile menu
     navLinks.classList.remove("open");
     
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Update sliding indicator position synchronously so it starts sliding instantly
+    updateNavIndicator();
+    
+    // Scroll to top instantly before rendering/transition
+    window.scrollTo(0, 0);
 
-    // Render corresponding view
-    if (tabName === "home") {
-      renderHomeView();
-    } else if (tabName === "browse") {
-      renderBrowseView();
-    } else if (tabName === "preorder") {
-      renderPreOrderView();
-    } else if (tabName === "cart") {
-      renderCartView();
-    } else if (tabName === "community") {
-      renderCommunityView();
-    } else if (tabName === "about") {
-      renderAboutView();
-    } else if (tabName === "profile") {
-      renderProfileView();
+    const updateDOM = () => {
+      // Render corresponding view
+      if (tabName === "home") {
+        renderHomeView();
+      } else if (tabName === "browse") {
+        renderBrowseView();
+      } else if (tabName === "preorder") {
+        renderPreOrderView();
+      } else if (tabName === "cart") {
+        renderCartView();
+      } else if (tabName === "community") {
+        renderCommunityView();
+      } else if (tabName === "about") {
+        renderAboutView();
+      } else if (tabName === "profile") {
+        renderProfileView();
+      }
+    };
+
+    // Use View Transitions API if supported for horizontal page slide transitions
+    if (document.startViewTransition) {
+      document.startViewTransition(updateDOM);
+    } else {
+      updateDOM();
     }
-
-    // Update sliding indicator position
-    setTimeout(updateNavIndicator, 50);
   };
 
   // Handle Navbar clicks
@@ -379,10 +381,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let curatedHtml = "";
-    curatedList.forEach(book => curatedHtml += renderBookCardHTML(book));
+    curatedList.forEach((book, idx) => curatedHtml += renderBookCardHTML(book, false, idx));
 
     let hotPicksHtml = "";
-    hotPicks.forEach(book => hotPicksHtml += renderBookCardHTML(book));
+    hotPicks.forEach((book, idx) => hotPicksHtml += renderBookCardHTML(book, false, idx));
 
     contentArea.innerHTML = `
       <!-- Hero Carousel Slider (No Arrow Buttons, Frosted Layout) -->
@@ -510,14 +512,14 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
 
-    let localHtml = filteredBooks.map(b => renderBookCardHTML(b, false)).join('');
+    let localHtml = filteredBooks.map((b, idx) => renderBookCardHTML(b, false, idx)).join('');
 
     if (isSearchingBrowseExternal) {
       booksGrid.innerHTML = `
         ${localHtml}
         <div style="grid-column: 1 / -1; margin-top: 1rem; margin-bottom: 0.5rem;"><h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--color-sand);">Searching external databases...</h3></div>
-        ${Array(2).fill(0).map(() => `
-          <div class="preorder-card" style="opacity: 0.6;">
+        ${Array(2).fill(0).map((_, idx) => `
+          <div class="preorder-card" style="opacity: 0.6; --sibling-index: ${filteredBooks.length + idx + 1};">
             <div class="preorder-cover-wrapper skeleton-loader"></div>
             <div class="preorder-details" style="gap: 1rem;">
               <div class="skeleton-loader" style="height: 24px; width: 60%;"></div>
@@ -531,7 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    let extHtml = browseExternalResults.map(b => renderBookCardHTML(b, true)).join('');
+    let extHtml = browseExternalResults.map((b, idx) => renderBookCardHTML(b, true, filteredBooks.length + idx)).join('');
 
     if (!localHtml && !extHtml) {
       booksGrid.innerHTML = `
@@ -598,7 +600,7 @@ document.addEventListener("DOMContentLoaded", () => {
       externalPreorderResults = [];
     }
 
-    const renderPreorderCardHtml = (book, isExternal = false) => {
+    const renderPreorderCardHtml = (book, isExternal = false, index = 0) => {
       const coverHtml = book.cover 
         ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="preorder-cover" alt="${book.title} Cover" />
            <div class="book-card-no-cover" style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
@@ -619,7 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const btnClass = isExternal ? "btn-preorder-external" : "btn-preorder-add";
 
       return `
-        <div class="preorder-card">
+        <div class="preorder-card" style="--sibling-index: ${index + 1};">
           <div class="preorder-cover-wrapper" style="cursor: pointer;" data-id="${book.id}" data-external="${isExternal}">
             ${coverHtml}
           </div>
@@ -737,12 +739,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!localGrid) return;
 
       if (isSearchingExternal) {
-        let localHtml = filteredPreorders.map(b => renderPreorderCardHtml(b, false)).join('');
+        let localHtml = filteredPreorders.map((b, idx) => renderPreorderCardHtml(b, false, idx)).join('');
         localGrid.innerHTML = `
           ${localHtml}
           <div style="grid-column: 1 / -1; margin-top: 1rem; margin-bottom: 0.5rem;"><h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--color-sand);">Searching Amazon, The Works & Goodreads...</h3></div>
-          ${Array(2).fill(0).map(() => `
-            <div class="preorder-card" style="opacity: 0.6;">
+          ${Array(2).fill(0).map((_, idx) => `
+            <div class="preorder-card" style="opacity: 0.6; --sibling-index: ${filteredPreorders.length + idx + 1};">
               <div class="preorder-cover-wrapper skeleton-loader"></div>
               <div class="preorder-details" style="gap: 1rem;">
                 <div class="skeleton-loader" style="height: 24px; width: 60%;"></div>
@@ -755,8 +757,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      let html = filteredPreorders.map(b => renderPreorderCardHtml(b, false)).join('');
-      let extHtml = externalPreorderResults.map(b => renderPreorderCardHtml(b, true)).join('');
+      let html = filteredPreorders.map((b, idx) => renderPreorderCardHtml(b, false, idx)).join('');
+      let extHtml = externalPreorderResults.map((b, idx) => renderPreorderCardHtml(b, true, filteredPreorders.length + idx)).join('');
 
       if (!html && !extHtml) {
         localGrid.innerHTML = `
@@ -880,10 +882,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let itemsHtml = "";
     let subtotalVal = 0;
-    cart.forEach(item => {
+    cart.forEach((item, idx) => {
       subtotalVal += item.price * item.qty;
       itemsHtml += `
-        <div class="cart-table-item">
+        <div class="cart-table-item" style="--sibling-index: ${idx + 1};">
           ${item.cover ? `
             <img src="${item.cover}" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=&quot;cart-table-cover&quot; style=&quot;background: linear-gradient(135deg, var(--color-teal), var(--color-brown)); display: flex; align-items: center; justify-content: center; text-align: center; padding: 6px; font-size: 0.6rem; color: var(--color-sand); font-weight: 700; line-height: 1.1; overflow: hidden;&quot;>${item.title.replace(/'/g, "\\'")}</div>';" class="cart-table-cover" alt="${item.title}" />
           ` : `
@@ -1075,9 +1077,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // RENDER COMMUNITY VIEW
   const renderCommunityView = () => {
     let chatHtml = "";
-    chatMessages.forEach(msg => {
+    chatMessages.forEach((msg, idx) => {
       chatHtml += `
-        <div class="chat-bubble ${msg.isUser ? 'user' : ''}">
+        <div class="chat-bubble ${msg.isUser ? 'user' : ''}" style="--sibling-index: ${idx + 1};">
           <div class="chat-bubble-header">
             <span class="chat-username">${msg.username}</span>
             <span class="chat-time">${msg.time}</span>
@@ -1088,11 +1090,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let requestsHtml = "";
-    requestedTitles.forEach(req => {
+    requestedTitles.forEach((req, idx) => {
       const isAlreadyAdded = books.some(b => b.title.toLowerCase() === req.title.toLowerCase());
       
       requestsHtml += `
-        <div class="request-item" id="req-item-${req.id}">
+        <div class="request-item" id="req-item-${req.id}" style="--sibling-index: ${idx + 1};">
           <div class="request-info">
             <span class="request-title">${req.title}</span>
             <span class="request-author">by ${req.author}</span>
@@ -1499,7 +1501,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
     } else {
-      orders.forEach(order => {
+      orders.forEach((order, idx) => {
         let itemsListStr = order.items.map(it => `${it.title} (${it.qty})`).join(", ");
         
         const orderTime = parseInt(order.id.replace('ord-', '')) || 0;
@@ -1537,7 +1539,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         ordersHtml += `
-          <div class="order-history-item" style="display: flex; flex-direction: column; gap: 1rem; align-items: stretch; padding: 1.5rem;">
+          <div class="order-history-item" style="--sibling-index: ${idx + 1}; display: flex; flex-direction: column; gap: 1rem; align-items: stretch; padding: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
               <div class="order-items-detail" style="flex-grow: 1;">
                 <span class="profile-info-value" style="font-size: 1.1rem; font-weight: 700; display: block; margin-bottom: 0.5rem; text-align: left;">${itemsListStr}</span>
@@ -1753,7 +1755,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Helper function to build Book Card HTML
-  const renderBookCardHTML = (book, isExternal = false) => {
+  const renderBookCardHTML = (book, isExternal = false, index = 0) => {
     const isPreOrder = book.category === "New Arrivals" || book.publishedYear >= 2026;
     const coverHtml = book.cover 
       ? `<img src="${getCoverUrl(book.cover)}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="book-card-cover" alt="${book.title} Cover" loading="lazy" />
@@ -1770,7 +1772,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnText = isExternal ? "Add to Cart" : (isPreOrder ? "Pre-Order" : "Add to Cart");
 
     return `
-      <div class="card-wrapper">
+      <div class="card-wrapper" style="--sibling-index: ${index + 1};">
         <article class="book-card">
           <div class="book-card-cover-wrapper" style="cursor: pointer;" data-id="${book.id}" data-external="${isExternal}">
             ${coverHtml}
@@ -2326,7 +2328,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const defaultReviews = [
       { reviewer: "Sarah K.", rating: 5, comment: "Absolutely loved the pace and chemistry! A fantastic read.", tier: "Silver Member", isVerified: true },
-      { reviewer: "Michael D.", rating: 4, comment: "Great character development and very engaging style.", tier: "Bronze Reader", isVerified: false }
+      { reviewer: "Michael D.", rating: 4, comment: "Great character development and very engaging style.", tier: "Bronze Reader", isVerified: false },
+      { reviewer: "Sophia L.", rating: 5, comment: "One of the best books I've read this year! Highly recommended.", tier: "Gold Member", isVerified: true },
+      { reviewer: "David P.", rating: 4, comment: "Very well written, kept me turning the pages late into the night.", tier: "Bronze Reader", isVerified: true },
+      { reviewer: "Emma W.", rating: 3, comment: "It was a decent read. Good pacing, though some plot points felt predictable.", tier: "Guest", isVerified: false }
     ];
     const reviewsToRender = book.reviews || defaultReviews;
     let reviewsHtml = "";
@@ -2356,32 +2361,29 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     });
 
-    let reviewFormHtml = "";
-    if (currentUser) {
-      reviewFormHtml = `
-        <div class="add-review-form">
-          <h4 class="add-review-title">Write a Review</h4>
-          <div class="rating-input-row">
-            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Your Rating:</span>
-            <div class="star-rating-input" id="star-rating-selector">
-              <span class="star-btn" data-value="1" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
-              <span class="star-btn" data-value="2" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
-              <span class="star-btn" data-value="3" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
-              <span class="star-btn" data-value="4" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
-              <span class="star-btn" data-value="5" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
-            </div>
+    let reviewFormHtml = `
+      <div class="add-review-form">
+        <h4 class="add-review-title">Write a Review</h4>
+        ${!currentUser ? `
+          <div style="background: rgba(231, 215, 193, 0.03); border: 1px dashed var(--glass-border); border-radius: var(--border-radius-md); padding: 0.75rem 1.25rem; text-align: left; margin-bottom: 1rem; width: 100%;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">You are commenting as a Guest. Or <a href="#profile" id="link-modal-login" style="color: var(--accent-color); font-weight: 700; text-decoration: underline;">log in / register</a> to review with your loyalty membership benefits.</span>
+            <input type="text" class="input-text" id="review-guest-name" placeholder="Your Name (Optional, defaults to Guest Reader)" style="width: 100%; max-width: 320px; padding: 0.45rem 1rem; border-radius: var(--border-radius-pill); border: 1px solid var(--glass-border); background-color: var(--color-brown-alpha-30); color: var(--color-sand); font-size: 0.85rem; outline: none; margin-top: 0.25rem;">
           </div>
-          <textarea class="review-textarea" id="review-comment-input" required placeholder="Write your review and share your reading experience with the community..."></textarea>
-          <button class="btn-primary" id="btn-submit-review" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: var(--border-radius-pill); cursor: pointer; align-self: flex-start; margin-top: 0.25rem;">Submit Review</button>
+        ` : ''}
+        <div class="rating-input-row">
+          <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Your Rating:</span>
+          <div class="star-rating-input" id="star-rating-selector">
+            <span class="star-btn" data-value="1" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+            <span class="star-btn" data-value="2" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+            <span class="star-btn" data-value="3" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+            <span class="star-btn" data-value="4" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+            <span class="star-btn" data-value="5" style="font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">☆</span>
+          </div>
         </div>
-      `;
-    } else {
-      reviewFormHtml = `
-        <div style="background: rgba(231, 215, 193, 0.03); border: 1px dashed var(--glass-border); border-radius: var(--border-radius-md); padding: 1.25rem; text-align: center; margin-bottom: 1.5rem;">
-          <span style="font-size: 0.85rem; color: var(--text-muted);">Please <a href="#profile" id="link-modal-login" style="color: var(--accent-color); font-weight: 700; text-decoration: underline;">log in or register</a> to comment and rate this book.</span>
-        </div>
-      `;
-    }
+        <textarea class="review-textarea" id="review-comment-input" required placeholder="Write your review and share your reading experience with the community..."></textarea>
+        <button class="btn-primary" id="btn-submit-review" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: var(--border-radius-pill); cursor: pointer; align-self: flex-start; margin-top: 0.25rem;">Submit Review</button>
+      </div>
+    `;
 
     bookDialog.innerHTML = `
       <div class="dialog-modal-content">
@@ -2495,17 +2497,30 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
           
-          const userSpent = calculateTotalSpent(currentUser);
-          const userTier = getMemberTier(userSpent);
-          const verified = hasPurchasedBook(currentUser.username, book.title);
+          let reviewerName = "Guest Reader";
+          let userTierName = "Guest";
+          let verified = false;
+          
+          if (currentUser) {
+            reviewerName = currentUser.username;
+            const userSpent = calculateTotalSpent(currentUser);
+            const userTier = getMemberTier(userSpent);
+            userTierName = userTier.name;
+            verified = hasPurchasedBook(currentUser.username, book.title);
+          } else {
+            const nameInput = bookDialog.querySelector("#review-guest-name");
+            if (nameInput && nameInput.value.trim()) {
+              reviewerName = nameInput.value.trim();
+            }
+          }
           
           if (!book.reviews) book.reviews = [];
           
           book.reviews.unshift({
-            reviewer: currentUser.username,
+            reviewer: reviewerName,
             rating: selectedRating,
             comment: commentVal,
-            tier: userTier.name,
+            tier: userTierName,
             isVerified: verified
           });
           
@@ -2515,7 +2530,7 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("lily_book_reviews", JSON.stringify(customReviews));
           
           if (currentTab === "browse") {
-            renderBrowseView();
+            renderBrowseResults();
           } else if (currentTab === "home") {
             renderHomeView();
           }
