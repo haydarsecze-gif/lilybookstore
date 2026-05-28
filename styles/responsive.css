@@ -105,10 +105,23 @@
     margin: 0;
     width: calc(100% - 1.5rem);
     top: 0.75rem;
-    height: 56px;
+    height: 68px;
     padding: 0.5rem 1.25rem;
     border-radius: 20px;
     z-index: 100;
+  }
+
+  .nav-logo {
+    height: 52px !important;
+  }
+
+  .nav-logo-img {
+    max-height: 52px !important;
+  }
+
+  .footer-logo-img {
+    max-height: 70px !important;
+    max-width: 180px !important;
   }
 
   /* Hide indicator on mobile navigation */
@@ -133,7 +146,7 @@
 
   .nav-links {
     position: fixed;
-    top: 72px;
+    top: 84px;
     left: 1rem;
     right: 1rem;
     background-color: rgba(75, 54, 33, 0.95);
