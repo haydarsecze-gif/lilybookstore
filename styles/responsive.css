@@ -251,7 +251,7 @@
     text-align: center;
   }
 
-  .book-detail-cover {
+  .book-detail-cover, .book-detail-cover-placeholder {
     max-width: 220px;
     margin-inline: auto;
   }
