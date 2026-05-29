@@ -2872,19 +2872,106 @@
 /* ==========================================
    ABOUT PAGE SUB-TABS
    ========================================== */
+.about-tabs-nav {
+  position: relative;
+  display: inline-flex;
+  background: var(--color-brown-alpha-30);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-pill);
+  padding: 0.35rem;
+  margin-bottom: 2.5rem;
+  justify-content: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.about-tab-indicator {
+  position: absolute;
+  background-color: var(--accent-color);
+  border-radius: var(--border-radius-pill);
+  transition: opacity 0.25s ease,
+              left 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+              right 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+              top 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+              height 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.about-tab-indicator.visible {
+  opacity: 1;
+}
+
+/* Asymmetric slide transitions matching the main navbar */
+.about-tab-indicator.slide-right {
+  transition: opacity 0.25s ease,
+              left 0.68s cubic-bezier(0.5, 1.6, 0.6, 1) 0.08s,
+              right 0.48s cubic-bezier(0.25, 1, 0.4, 1),
+              top 0.5s ease,
+              height 0.5s ease;
+}
+
+.about-tab-indicator.slide-left {
+  transition: opacity 0.25s ease,
+              left 0.48s cubic-bezier(0.25, 1, 0.4, 1),
+              right 0.68s cubic-bezier(0.5, 1.6, 0.6, 1) 0.08s,
+              top 0.5s ease,
+              height 0.5s ease;
+}
+
 .about-tab-btn {
-  background: transparent;
+  position: relative;
+  background: transparent !important;
   border: none;
   cursor: pointer;
   outline: none;
+  z-index: 1;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
 }
 
 .about-tab-btn:hover {
   color: var(--color-sand) !important;
-  background-color: var(--color-brown-alpha-60) !important;
-  cursor: pointer;
 }
 
-.about-tab-btn.active:hover {
-  background-color: var(--accent-hover) !important;
+.about-tab-btn.active {
+  color: var(--color-sand) !important;
 }
+
+/* Custom View Transition for About Tab Body */
+#about-tab-body {
+  view-transition-name: about-tab-body;
+}
+
+::view-transition-old(about-tab-body) {
+  animation: tabFadeOut 0.15s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+::view-transition-new(about-tab-body) {
+  animation: tabFadeIn 0.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes tabFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+

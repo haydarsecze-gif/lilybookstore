@@ -212,6 +212,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  const updateAboutTabIndicator = () => {
+    const activeBtn = document.querySelector(".about-tab-btn.active");
+    const indicator = document.querySelector(".about-tab-indicator");
+    
+    if (activeBtn && indicator) {
+      const newLeft = activeBtn.offsetLeft;
+      const newWidth = activeBtn.offsetWidth;
+      const parentWidth = activeBtn.parentElement.offsetWidth;
+      const newRight = parentWidth - (newLeft + newWidth);
+
+      const currentLeft = parseFloat(indicator.style.left) || 0;
+
+      indicator.classList.remove("slide-left", "slide-right");
+      if (indicator.classList.contains("visible")) {
+        if (newLeft > currentLeft) {
+          indicator.classList.add("slide-right");
+        } else if (newLeft < currentLeft) {
+          indicator.classList.add("slide-left");
+        }
+      }
+
+      indicator.style.left = `${newLeft}px`;
+      indicator.style.right = `${newRight}px`;
+      indicator.style.top = `${activeBtn.offsetTop}px`;
+      indicator.style.height = `${activeBtn.offsetHeight}px`;
+      indicator.classList.add("visible");
+    }
+  };
+
+
   const navigateTo = (tabName) => {
     currentTab = tabName;
     
@@ -1334,11 +1364,19 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (aboutTab === 'mission') activeContent = missionContent;
       else if (aboutTab === 'vision') activeContent = visionContent;
 
+      const mainContentArea = document.getElementById("content-area");
       const bodyContainer = document.getElementById("about-tab-body");
       if (bodyContainer) {
         if (document.startViewTransition) {
-          document.startViewTransition(() => {
+          // Temporarily disable the main content area horizontal slide transition so only the tab body cross-fades
+          if (mainContentArea) mainContentArea.style.viewTransitionName = 'none';
+          
+          const transition = document.startViewTransition(() => {
             bodyContainer.innerHTML = activeContent;
+          });
+          
+          transition.finished.finally(() => {
+            if (mainContentArea) mainContentArea.style.viewTransitionName = '';
           });
         } else {
           bodyContainer.innerHTML = activeContent;
@@ -1354,10 +1392,11 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <!-- Sleek Sub-Tab Switcher inside About Page -->
-        <div class="about-tabs-nav" style="display: inline-flex; background: var(--color-brown-alpha-30); border: 1px solid var(--glass-border); border-radius: var(--border-radius-pill); padding: 0.35rem; margin-bottom: 2.5rem; justify-content: center; gap: 0.5rem; backdrop-filter: blur(10px);">
-          <button class="about-tab-btn active" data-subtab="story" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill); color: var(--color-sand); transition: var(--transition-fast);">Our Story</button>
-          <button class="about-tab-btn" data-subtab="mission" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill); color: var(--text-muted); transition: var(--transition-fast);">Mission</button>
-          <button class="about-tab-btn" data-subtab="vision" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill); color: var(--text-muted); transition: var(--transition-fast);">Vision</button>
+        <div class="about-tabs-nav">
+          <div class="about-tab-indicator"></div>
+          <button class="about-tab-btn active" data-subtab="story" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill);">Our Story</button>
+          <button class="about-tab-btn" data-subtab="mission" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill);">Mission</button>
+          <button class="about-tab-btn" data-subtab="vision" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill);">Vision</button>
         </div>
 
         <!-- Render active subtab content inside a frosted glass panel -->
@@ -1385,28 +1424,22 @@ document.addEventListener("DOMContentLoaded", () => {
     tabBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         aboutTab = btn.dataset.subtab;
-        tabBtns.forEach(b => {
-          b.classList.remove("active");
-          b.style.color = "var(--text-muted)";
-          b.style.backgroundColor = "transparent";
-        });
+        tabBtns.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        btn.style.color = "var(--color-sand)";
-        btn.style.backgroundColor = "var(--accent-color)";
         
         updateAboutContent();
+        updateAboutTabIndicator();
       });
     });
 
-    // Make the active button styles correct on initial render
-    const activeBtn = contentArea.querySelector(".about-tab-btn.active");
-    if (activeBtn) {
-      activeBtn.style.color = "var(--color-sand)";
-      activeBtn.style.backgroundColor = "var(--accent-color)";
-    }
+    // Make the active button styles and indicator correct on initial render
+    requestAnimationFrame(() => {
+      updateAboutTabIndicator();
+    });
 
     document.getElementById("about-browse-btn").addEventListener("click", () => navigateTo("browse"));
   };
+
 
   // RENDER USER PROFILE VIEW (LOGIN / REGISTER / DASHBOARD)
   const renderProfileView = () => {
@@ -2665,9 +2698,15 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCart();
   updateCartCount();
   navigateTo("home");
+  window.addEventListener("resize", () => {
+    updateNavIndicator();
+    updateAboutTabIndicator();
+  });
+  window.addEventListener("load", () => {
+    updateNavIndicator();
+    updateAboutTabIndicator();
+  });
 
-  window.addEventListener("resize", updateNavIndicator);
-  window.addEventListener("load", updateNavIndicator);
 
 
 
