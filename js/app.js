@@ -1303,26 +1303,108 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // RENDER ABOUT VIEW
   const renderAboutView = () => {
-    contentArea.innerHTML = `
-      <section class="container fade-in-view" style="padding-block: 10rem 8rem; max-width: 800px; text-align: center;">
-        <div class="section-header" style="margin-bottom: 2rem;">
-          <span class="section-badge">Our Story</span>
-          <h1>About Lily Bookstore</h1>
-        </div>
-        <p style="font-size: 1.15rem; margin-bottom: 2rem; line-height: 1.8;">
+    let aboutTab = 'story';
+
+    const updateAboutContent = () => {
+      const storyContent = `
+        <p style="font-size: 1.15rem; margin-bottom: 1.5rem; line-height: 1.8; text-align: left;">
           Lily Bookstore is a modern digital sanctuary for book lovers. Established in 2026, we curate premium literature across romance, thrillers, and contemporary novels. Our goal is to bring reader communities closer together through beautifully crafted web experiences.
         </p>
-        <p style="font-size: 1rem; margin-bottom: 2rem; color: var(--text-muted); line-height: 1.8;">
+        <p style="font-size: 1rem; margin-bottom: 0; color: var(--text-muted); line-height: 1.8; text-align: left;">
           By leveraging Goodreads integrations, Lily Bookstore allows readers to easily carry over their personal shelves and digital libraries, creating a unified showcase of their favorite reading materials.
         </p>
-        <p style="font-size: 0.95rem; margin-bottom: 3rem; color: var(--accent-color); font-weight: 600; line-height: 1.6;">
+      `;
+
+      const missionContent = `
+        <h3 style="font-family: var(--font-serif); font-size: 1.65rem; color: var(--color-sand); margin-bottom: 1.25rem; text-align: left;">Our Mission</h3>
+        <p style="font-size: 1.15rem; margin-bottom: 0; line-height: 1.8; text-align: left;">
+          Our mission is to prioritize customer comfort and happiness by removing every barrier between a reader and their next favorite book. We are dedicated to making it possible for our customers to get any book they want, exactly how they want it whether it's a standard release from the US or a rare special edition from the UK.
+        </p>
+      `;
+
+      const visionContent = `
+        <h3 style="font-family: var(--font-serif); font-size: 1.65rem; color: var(--color-sand); margin-bottom: 1.25rem; text-align: left;">Our Vision</h3>
+        <p style="font-size: 1.15rem; margin-bottom: 0; line-height: 1.8; text-align: left;">
+          To become Cambodia's premier literary gateway and community hub, recognized for transforming the way people access knowledge and stories. We envision a future where every reader in Cambodia can curate a world-class home library with ease, supported by a brand that treats their reading journey with the highest level of personal care.
+        </p>
+      `;
+
+      let activeContent = "";
+      if (aboutTab === 'story') activeContent = storyContent;
+      else if (aboutTab === 'mission') activeContent = missionContent;
+      else if (aboutTab === 'vision') activeContent = visionContent;
+
+      const bodyContainer = document.getElementById("about-tab-body");
+      if (bodyContainer) {
+        if (document.startViewTransition) {
+          document.startViewTransition(() => {
+            bodyContainer.innerHTML = activeContent;
+          });
+        } else {
+          bodyContainer.innerHTML = activeContent;
+        }
+      }
+    };
+
+    contentArea.innerHTML = `
+      <section class="container fade-in-view" style="padding-block: 8rem 6rem; max-width: 800px; text-align: center;">
+        <div class="section-header" style="margin-bottom: 2rem;">
+          <span class="section-badge">Our Story</span>
+          <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem;">About Lily Bookstore</h1>
+        </div>
+
+        <!-- Sleek Sub-Tab Switcher inside About Page -->
+        <div class="about-tabs-nav" style="display: inline-flex; background: var(--color-brown-alpha-30); border: 1px solid var(--glass-border); border-radius: var(--border-radius-pill); padding: 0.35rem; margin-bottom: 2.5rem; justify-content: center; gap: 0.5rem; backdrop-filter: blur(10px);">
+          <button class="about-tab-btn active" data-subtab="story" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill); color: var(--color-sand); transition: var(--transition-fast);">Our Story</button>
+          <button class="about-tab-btn" data-subtab="mission" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill); color: var(--text-muted); transition: var(--transition-fast);">Mission</button>
+          <button class="about-tab-btn" data-subtab="vision" style="padding: 0.5rem 1.5rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-pill); color: var(--text-muted); transition: var(--transition-fast);">Vision</button>
+        </div>
+
+        <!-- Render active subtab content inside a frosted glass panel -->
+        <div class="about-tab-content-wrapper" style="min-height: 220px; background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: var(--border-radius-lg); backdrop-filter: blur(20px); box-shadow: var(--glass-shadow); margin-bottom: 2.5rem;">
+          <div id="about-tab-body">
+            <!-- Loaded dynamically by updateAboutContent -->
+          </div>
+        </div>
+
+        <p style="font-size: 0.95rem; margin-bottom: 2.5rem; color: var(--accent-color); font-weight: 600; line-height: 1.6; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
           Created by Ratha Nit. Rights owned by Ratha Nit.
         </p>
+
         <div style="display: flex; justify-content: center; gap: 1rem;">
           <button class="btn-primary" id="about-browse-btn">Browse the Catalog</button>
         </div>
       </section>
     `;
+
+    // Initialize subtab content
+    updateAboutContent();
+
+    // Attach listeners to sub-tabs
+    const tabBtns = contentArea.querySelectorAll(".about-tab-btn");
+    tabBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        aboutTab = btn.dataset.subtab;
+        tabBtns.forEach(b => {
+          b.classList.remove("active");
+          b.style.color = "var(--text-muted)";
+          b.style.backgroundColor = "transparent";
+        });
+        btn.classList.add("active");
+        btn.style.color = "var(--color-sand)";
+        btn.style.backgroundColor = "var(--accent-color)";
+        
+        updateAboutContent();
+      });
+    });
+
+    // Make the active button styles correct on initial render
+    const activeBtn = contentArea.querySelector(".about-tab-btn.active");
+    if (activeBtn) {
+      activeBtn.style.color = "var(--color-sand)";
+      activeBtn.style.backgroundColor = "var(--accent-color)";
+    }
+
     document.getElementById("about-browse-btn").addEventListener("click", () => navigateTo("browse"));
   };
 

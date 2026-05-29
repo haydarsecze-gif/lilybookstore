@@ -2869,6 +2869,22 @@
   }
 }
 
+/* ==========================================
+   ABOUT PAGE SUB-TABS
+   ========================================== */
+.about-tab-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
 
+.about-tab-btn:hover {
+  color: var(--color-sand) !important;
+  background-color: var(--color-brown-alpha-60) !important;
+  cursor: pointer;
+}
 
-
+.about-tab-btn.active:hover {
+  background-color: var(--accent-hover) !important;
+}
