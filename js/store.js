@@ -77,18 +77,18 @@ const INITIAL_BOOKS = [
     reviews: []
   },
   {
-    id: "seven-husbands-evelyn-hugo",
-    title: "The Seven Husbands of Evelyn Hugo",
-    author: "Taylor Jenkins Reid",
+    id: "the-girl-who-fell-beneath-the-sea",
+    title: "The Girl Who Fell Beneath the Sea",
+    author: "Axie Oh",
     category: "Romance",
     rating: 5,
-    price: 17.00,
-    cover: "https://covers.openlibrary.org/b/id/15199344-L.jpg",
-    description: "Aging and reclusive Hollywood movie icon Evelyn Hugo is finally ready to tell the truth about her glamorous and scandalous life, choosing an unknown reporter to write it.",
+    price: 18.00,
+    cover: "https://covers.openlibrary.org/b/isbn/9781250780867-L.jpg",
+    description: "To save her brother's beloved from being sacrificed to the Sea God, Mina throws herself into the water, sweeping away into the Spirit Realm to wake the god and break a deadly curse.",
     isTrending: true,
     isHotPick: true,
-    publishedYear: 2017,
-    stock: 4,
+    publishedYear: 2022,
+    stock: 6,
     reviews: []
   },
   {

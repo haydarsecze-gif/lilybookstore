@@ -1309,7 +1309,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const msgLower = userMsg.toLowerCase();
     
     if (msgLower.includes("romance") || msgLower.includes("love") || msgLower.includes("cozy")) {
-      replyText = "Ooh, if you love romance, you should definitely check out 'Funny Story' by Emily Henry or 'The Seven Husbands of Evelyn Hugo'!";
+      replyText = "Ooh, if you love romance, you should definitely check out 'Funny Story' by Emily Henry or 'The Girl Who Fell Beneath the Sea'!";
     } else if (msgLower.includes("thriller") || msgLower.includes("scary") || msgLower.includes("mystery") || msgLower.includes("ending")) {
       replyText = "If you're into mysteries and thrillers, 'The Silent Patient' or 'The Guest List' are perfect page-turners available in the catalog.";
     } else if (msgLower.includes("recommend") || msgLower.includes("what should i read")) {
