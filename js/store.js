@@ -614,6 +614,23 @@ const INITIAL_BOOKS = [
       { reviewer: "Tessa G.", rating: 5, comment: "Breathtaking dark fantasy. Absolutely gorgeous storytelling!" },
       { reviewer: "Jacob P.", rating: 5, comment: "I've been waiting for this print publication. A true masterpiece." }
     ]
+  },
+  {
+    id: "the-book-of-grief",
+    title: "សៀវភៅលាក់ទុក្ខ - The Book of Grief",
+    author: "វាយោ (Vayo)",
+    category: "New Arrivals",
+    rating: 5,
+    price: 15.00,
+    cover: "assets/the_book_of_grief.jpg",
+    description: `“ពាក្យពេចន៍ដែលមិនបាននិយាយ នឹងក្លាយជាសំណេរដែលបានសរសេរទុក”\n\nទុក្ខសោកខ្លះ ចូលមកដោយមិនបង្ហាញនាមអ្វីឡើយ។ វាចូលមកជិតយើងយ៉ាងស្ងៀមស្ងាត់... នៅក្នុងចិត្ត... នៅក្នុងរូបកាយ... ក្នុងស្រមោលនៃការចងចាំ និងក្នុងចន្លោះរវាងអ្វីដែលបាននិយាយចេញមក និងអ្វីដែលត្រូវបានលាក់ទុក។ «សៀវភៅលាក់ទុក្ខ» បង្ហាញពីដំណើរនៃការផ្លាស់ប្ដូរ ការនឹកនាដ៏ស្ងប់ស្ងាត់ ក្ដីសង្ឃឹម និងការធ្វើដំណើរឆ្លងកាត់ពេលវេលានៃជីវិតរបស់មនុស្សម្នាក់ និងបុគ្គលម្នាក់ទៀតដែលយើងមិនអាចបកស្រាយបាន។`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2026,
+    reviews: [
+      { reviewer: "ម៉ានី", rating: 5, comment: "រង់ចាំអានប្រលោមលោកថ្មីនេះណាស់! គ្រាន់តែឃើញក្របសៀវភៅក៏ទាក់ទាញបាត់ទៅហើយ។" },
+      { reviewer: "សុជាតា", rating: 5, comment: "ក្របសៀវភៅស្អាតខ្លាំងណាស់ ចូលចិត្តស្នាដៃរបស់អ្នកនិពន្ធវាយោ។" }
+    ]
   }
 ];
 
