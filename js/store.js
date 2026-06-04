@@ -682,6 +682,40 @@ const INITIAL_BOOKS = [
       { reviewer: "សុខា", rating: 5, comment: "បទចម្រៀងពិរោះខ្លាំងណាស់ ស្តាប់ហើយចង់អានសៀវភៅតែម្តង!" },
       { reviewer: "ភារម្យ", rating: 5, comment: "ឈុត Gentleman Edition ពិតជាទាក់ទាញខ្លាំងណាស់ ចង់បាន CD ណាស់!" }
     ]
+  },
+  {
+    id: "mok-neang",
+    title: "មុខនាង (Her Face) - Spray Edge Edition",
+    author: "សំណេរ (Somnae)",
+    category: "New Arrivals",
+    rating: 5,
+    price: 9.50,
+    cover: "assets/mok_neang.jpg",
+    description: `[𝐒𝐏𝐑𝐀𝐘 𝐄𝐃𝐆𝐄 𝐄𝐃𝐈𝐓𝐈𝐎𝐍]\n\nបេីកកក់ទុកមុននៃសៀវភៅ «មុខនាង» ដែលមាន Spray គែម ✨\n\nទទួលបាន៖\n- សៀវភៅ «មុខនាង» គែមពណ៌ស្អាតប្រណីត\n- ថែមជូនស្នៀតសៀវភៅ (Bookmarks) ចំនួន ៤\n- ថែម Postcard ចំនួន ៦\n- ថែម Poster ចំនួន ១\n\n⚡ តម្លៃពិសេស៖ ៣៨,០០០៛ ($9.50)\n*ការបន្ថែមជូនផ្ទាំងរូបភាព និងស្នៀតសៀវភៅមានសម្រាប់តែការកក់ទុកមុនប៉ុណ្ណោះ!*`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2026,
+    reviews: [
+      { reviewer: "សាលី", rating: 5, comment: "សៀវភៅ Spray Edge Edition នេះស្អាតប្លែកភ្នែកមែនទែន ចូលចិត្តខ្លាំងណាស់!" },
+      { reviewer: "ទេវី", rating: 5, comment: "រង់ចាំការបោះពុម្ភផ្សាយសៀវភៅនេះណាស់!" }
+    ]
+  },
+  {
+    id: "ogre-faced-killer",
+    title: "ឃាតករមុខយក្ស (The Ogre-Faced Killer) - Spray Edge Edition",
+    author: "សំណេរ (Somnae)",
+    category: "New Arrivals",
+    rating: 5,
+    price: 9.50,
+    cover: "",
+    description: `[𝐒𝐏𝐑𝐀𝐘 𝐄𝐃𝐆𝐄 𝐄𝐃𝐈𝐓𝐈𝐎𝐍]\n\nបេីកកក់ទុកមុននៃសៀវភៅ «ឃាតករមុខយក្ស» ដែលមាន Spray គែម ✨\n\nទទួលបាន៖\n- សៀវភៅ «ឃាតករមុខយក្ស» គែមពណ៌ស្អាតប្រណីត\n- ថែមជូនស្នៀតសៀវភៅ (Bookmarks) ចំនួន ៨\n- ថែម Postcard ចំនួន ៦\n- ថែម Poster ចំនួន ១\n\n⚡ តម្លៃពិសេស៖ ៣៨,០០០៛ ($9.50)\n*ការបន្ថែមជូនផ្ទាំងរូបភាព និងស្នៀតសៀវភៅមានសម្រាប់តែការកក់ទុកមុនប៉ុណ្ណោះ!*`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2026,
+    reviews: [
+      { reviewer: "ពិសិដ្ឋ", rating: 5, comment: "ឃាតករមុខយក្ស មាន Spray Edge ថែមទាំង Bookmarks ដល់ទៅ ៨ ទៀត ពិតជាល្អណាស់!" },
+      { reviewer: "ម៉ាលីស", rating: 5, comment: "រចនាបថស្អាតប្លែកសក្តិសមនឹងការសន្សំទុក។" }
+    ]
   }
 ];
 
