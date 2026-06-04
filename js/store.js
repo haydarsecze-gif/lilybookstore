@@ -1,5 +1,68 @@
 // Book Database Store
 const INITIAL_BOOKS = [
+  {
+    id: "the-book-of-grief",
+    title: "សៀវភៅលាក់ទុក្ខ - The Book of Grief",
+    author: "វាយោ (Vayo)",
+    category: "Romance",
+    rating: 5,
+    price: 14.50,
+    cover: "assets/the_book_of_grief.jpg",
+    description: `“ពាក្យពេចន៍ដែលមិនបាននិយាយ នឹងក្លាយជាសំណេរដែលបានសរសេរទុក”\n\nទុក្ខសោកខ្លះ ចូលមកដោយមិនបង្ហាញនាមអ្វីឡើយ។ វាចូលមកជិតយើងយ៉ាងស្ងៀមស្ងាត់... នៅក្នុងចិត្ត... នៅក្នុងរូបកាយ... ក្នុងស្រមោលនៃការចងចាំ និងក្នុងចន្លោះរវាងអ្វីដែលបាននិយាយចេញមក និងអ្វីដែលត្រូវបានលាក់ទុក។ «សៀវភៅលាក់ទុក្ខ» បង្ហាញពីដំណើរនៃការផ្លាស់ប្ដូរ ការនឹកនាដ៏ស្ងប់ស្ងាត់ ក្ដីសង្ឃឹម និងការធ្វើដំណើរឆ្លងកាត់ពេលវេលានៃជីវិតរបស់មនុស្សម្នាក់ និងបុគ្គលម្នាក់ទៀតដែលយើងមិនអាចបកស្រាយបាន។`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2025,
+    stock: 12,
+    reviews: [
+      { reviewer: "ម៉ានី", rating: 5, comment: "រង់ចាំអានប្រលោមលោកថ្មីនេះណាស់! គ្រាន់តែឃើញក្របសៀវភៅក៏ទាក់ទាញបាត់ទៅហើយ។" },
+      { reviewer: "សុជាតា", rating: 5, comment: "ក្របសៀវភៅស្អាតខ្លាំងណាស់ ចូលចិត្តស្នាដៃរបស់អ្នកនិពន្ធវាយោ។" },
+      { reviewer: "Ratha Nit", rating: 5, comment: "ស្នាដៃនិពន្ធដ៏ល្អវិសេសវិសាល! បង្កប់អត្ថន័យជ្រាលជ្រៅខ្លាំងណាស់។" },
+      { reviewer: "ចាន់ដារ៉ា", rating: 5, comment: "សាច់រឿងប៉ះពាល់អារម្មណ៍ខ្លាំង អានហើយស្រក់ទឹកភ្នែកដោយមិនដឹងខ្លួន។" },
+      { reviewer: "ពិសិដ្ឋ", rating: 4, comment: "ការរៀបចំសៀវភៅនិងការរចនាក្របគឺមានលក្ខណៈស្តង់ដារខ្ពស់ណាស់។" }
+    ]
+  },
+  {
+    id: "kingdom-of-suriya-part-1",
+    title: "អាណាចក្រសុរិយ៖ ភាគទី១ - Kingdom of Suriya: Part 1",
+    author: "សំណេរ (Somnae)",
+    category: "Romance",
+    rating: 5,
+    price: 18.00,
+    cover: "assets/kingdom_of_suriya_part_1.jpg",
+    description: `✨𝐎𝐏𝐄𝐍 𝐅𝐎𝐑 𝐏𝐑𝐄-𝐎𝐑𝐃𝐄𝐑✨\n\n•• 𝐌𝐄𝐑𝐀 𝐄𝐃𝐈𝐓𝐈𝐎𝐍\n(Pre-Order ត្រឹមតែ៖ ៥៦,០០០៛ | $14.00) ✔️\n\nទទួលបាន៖\n- សៀវភៅ «អាណាចក្រសុរិយ៖ ភាគទី១» ប្រភេទក្របរឹង Hard Cover ចំនួន 1ក្បាល\n- ហត្ថលេខា អ្នកនិពន្ធ និង វិចិត្រករ\n- ស្នៀតសៀវភៅ ចំនួន៤\n- ស្នៀតសៀវភៅតួអង្គ Diecut ចំនួន៣\n- Postcard តួអង្គ ខ្នាត A5 ចំនួន៣\n- Postcard ពិសេស ខ្នាត A5 ចំនួន១\n- ផ្ទាំងផែនទីនៃអាណាចក្រសុរិយ ខ្នាត A3 ចំនួន១\n- ផ្ទាំងរូបភាពនៃរាជធានីសុរិយ ខ្នាត A3 ចំនួន១\n- ប្រអប់ការពារសៀវភៅ + ការវេចខ្ចប់ពិសេស\n\n*បិទកក់ត្រឹមថ្ងៃទី០៥ ខែមីនា ឆ្នាំ២០២៦*`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2025,
+    stock: 14,
+    reviews: [
+      { reviewer: "ដារ៉ា", rating: 5, comment: "សៀវភៅ Mera Edition នេះរៀបចំឡើងមកប្រណីតមែនទែន! ប្រអប់និងកញ្ចប់ពិសេសគឺស្អាតរកគាស់មិនបាន។" },
+      { reviewer: "ចាន់ថា", rating: 5, comment: "គំនូរនិងសាច់រឿងលំដាប់ខ្ពស់ខ្លាំងណាស់ គាំទ្រស្នាដៃខ្មែរ!" },
+      { reviewer: "សុវណ្ណ", rating: 5, comment: "គំនូរស្អាតខ្លាំងណាស់! ផែនទី និងកាតប៉ូស្ដាល់ដែលថែមមកជាមួយគឺពិតជាប្លែកគេ។" },
+      { reviewer: "ស្រីល័ក្ខ", rating: 4, comment: "ប្រលោមលោកបែបអភិនីហារខ្មែរដំបូងគេដែលខ្ញុំចូលចិត្តបំផុត។" },
+      { reviewer: "Ratha Nit", rating: 5, comment: "អស្ចារ្យណាស់! ការវេចខ្ចប់ Gentleman/Mera Edition នេះពិតជាមានតម្លៃណាស់សម្រាប់អ្នកប្រមូលសន្សំ។" }
+    ]
+  },
+  {
+    id: "find-me-reminder",
+    title: "ចំណងដានជតា - Find me, reminder",
+    author: "នីម៉ូសា (Nimosa)",
+    category: "Thriller",
+    rating: 5,
+    price: 15.50,
+    cover: "assets/find_me_reminder.jpg",
+    description: `“យើងមិនមែនទេវតា យើងគ្រាន់តែជាកែសម្រួលអក្ខរាវិរុទ្ធតែប៉ុណ្ណោះ”\n\nនៅពេលសាកសពនិស្សិតម្នាក់ត្រូវបានគេរកឃើញនៅក្បែរមាត់ទ្វារបន្ទប់ស្នាក់នៅ បរិវេណសាកលវិទ្យាល័យទាំងមូលក៏ដួលរលំទៅក្នុងភាពភ័យខ្លាច។ មានតែ វីរ៉ា ម្នាក់គត់ដែលរក្សាភាពស្ងប់ស្ងាត់ហាក់គ្មានរឿងអ្វីកើតឡើង។ នៅពីក្រោយរបាំងមុខនៃភាពព្រងើយកន្តើយ នាងនឹងប្រមាញ់ការពិត បំពេញភារកិច្ចក្នុងការបោសសម្អាត រៀបចំសណ្ដាប់ធ្នាប់ និងបញ្ចប់រាល់ភាពចលាចលទាំងឡាយដោយដៃរបស់នាងផ្ទាល់。\n\nសៀវភៅប្រលោមលោកបែបអាថ៌កំបាំង អភិនីហារ - SchoolVibe\nបោះពុម្ពផ្សាយដោយ៖ សំណេរ\nអ្នកសរសេរ៖ នីម៉ូសា\nត្រួតពិនិត្យ និងសម្រួល៖ តាំង ហ៊ុយសេង`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2025,
+    stock: 11,
+    reviews: [
+      { reviewer: "វីរៈ", rating: 5, comment: "សាច់រឿងបែបស៊ើបអង្កេតអាថ៌កំបាំងក្នុងសាលា គួរឱ្យចាប់អារម្មណ៍ខ្លាំងណាស់!" },
+      { reviewer: "លីណា", rating: 4, comment: "ចូលចិត្តភាពរំភើបញាប់ញ័រនិងការស៊ើបអង្កេតក្នុងរឿងនេះ。" },
+      { reviewer: "រតនា", rating: 5, comment: "តួអង្គវីរ៉ាត្រូវបានបង្កើតឡើងយ៉ាងល្អ! ឆ្លាតនិងមានការសម្រេចចិត្តច្បាស់លាស់។" },
+      { reviewer: "សិលា", rating: 5, comment: "អាថ៌កំបាំងនិងភាពតានតឹងពេញមួយរឿង ធ្វើឱ្យខ្ញុំអានមិនចង់ដាក់ចុះ។" },
+      { reviewer: "មុន្នី", rating: 5, comment: "ស្នាដៃនិពន្ធខ្មែរដ៏ល្អឯកមួយបែប SchoolVibe អាថ៌កំបាំង!" }
+    ]
+  },
   // --- ROMANCE CATEGORY (15 Books) ---
   {
     id: "great-gatsby",
@@ -225,6 +288,27 @@ const INITIAL_BOOKS = [
     publishedYear: 2018,
     stock: 6,
     reviews: []
+  },
+  {
+    id: "the-heartbroken-man",
+    title: "បុរសខកស្នេហ៍ - The Heartbroken Man",
+    author: "សំណេរ (Somnae)",
+    category: "Romance",
+    rating: 5,
+    price: 16.00,
+    cover: "assets/the_heartbroken_man.jpg",
+    description: `🏆 OST. នៃសៀវភៅ «បុរសខកស្នេហ៍» - បទចម្រៀង «តួរងល្អឥតខ្ចោះ»\n\nការប្រកួតច្រៀងចម្រៀង Song Cover Contest៖\n🏆ជ័យលាភីលេខ១៖ ទទួលបានឈុត Gentleman Edition + សៀវភៅ៣០ក្បាល + Original CD\n🏆ជ័យលាភីលេខ២៖ ទទួលបានឈុត Gentleman Edition + សៀវភៅ១៥ក្បាល + Original CD\n🏆ជ័យលាភីលេខ៣៖ ទទួលបានឈុត Gentleman Edition + សៀវភៅ១០ក្បាល + Original CD\n\nលក្ខខណ្ឌក្នុងការចូលរួម៖\n- ត្រូវ Cover តាមបទចម្រៀង «តួរងល្អឥតខ្ចោះ»\n- រយៈពេលនៃវីដេអូ ចាប់ពី២នាទីឡេីងទៅ\n- Link ទៅកាន់បទចម្រៀង៖ https://youtu.be/KQpqOiwEYss?si=C0LmXnXCD4EGkxoS\n- ភ្លេងសុទ្ធ៖ https://youtu.be/BluACzrF7Xk?si=Ahbcp9K4mg6FwSSL\n- ត្រូវបង្ហោះវីដេអូចូលរួមនៅលេី Facebook ឬ TikTok ឬ YouTube\n- ភ្ជាប់ជាមួយ hashtag #SomnaeSongCoverContest #តួរងល្អឥតខ្ចោះ\n- ផុតកំណត់ត្រឹមថ្ងៃទី១៤ ខែកុម្ភៈ ឆ្នាំ២០២៦`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2025,
+    stock: 13,
+    reviews: [
+      { reviewer: "សុខា", rating: 5, comment: "បទចម្រៀងពិរោះខ្លាំងណាស់ ស្តាប់ហើយចង់អានសៀវភៅតែម្តង!" },
+      { reviewer: "ភារម្យ", rating: 5, comment: "ឈុត Gentleman Edition ពិតជាទាក់ទាញខ្លាំងណាស់ ចង់បាន CD ណាស់!" },
+      { reviewer: "វល័ក្ខ", rating: 5, comment: "សាច់រឿងមនោសញ្ចេតនាជ្រាលជ្រៅ យល់ចិត្តតួអង្គច្បាស់ណាស់។" },
+      { reviewer: "ឧត្តម", rating: 4, comment: "ការបោះពុម្ភផ្សាយគឺល្អឥតខ្ចោះ គាំទ្រស្នាដៃសំណេរជានិច្ច!" },
+      { reviewer: "សុជាតា", rating: 5, comment: "ចម្រៀង OST ពិរោះ សៀវភៅក៏ល្អ គ្មានអ្វីទាស់ចិត្តឡើយ។" }
+    ]
   },
 
   // --- THRILLER CATEGORY (20 Books) ---
@@ -528,6 +612,48 @@ const INITIAL_BOOKS = [
     stock: 8,
     reviews: []
   },
+  {
+    id: "mok-neang",
+    title: "មុខនាង (Her Face) - Spray Edge Edition",
+    author: "សំណេរ (Somnae)",
+    category: "Thriller",
+    rating: 5,
+    price: 12.50,
+    cover: "assets/mok_neang.jpg",
+    description: `[𝐒𝐏𝐑𝐀𝐘 𝐄𝐃𝐆𝐄 𝐄𝐃𝐈𝐓𝐈𝐎𝐍]\n\nបេីកកក់ទុកមុននៃសៀវភៅ «មុខនាង» ដែលមាន Spray គែម ✨\n\nទទួលបាន៖\n- សៀវភៅ «មុខនាង» គែមពណ៌ស្អាតប្រណីត\n- ថែមជូនស្នៀតសៀវភៅ (Bookmarks) ចំនួន ៤\n- ថែម Postcard ចំនួន ៦\n- ថែម Poster ចំនួន ១\n\n⚡ តម្លៃពិសេស៖ ៣៨,០០០៛ ($9.50)\n*ការបន្ថែមជូនផ្ទាំងរូបភាព និងស្នៀតសៀវភៅមានសម្រាប់តែការកក់ទុកមុនប៉ុណ្ណោះ!*`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2025,
+    stock: 15,
+    reviews: [
+      { reviewer: "សាលី", rating: 5, comment: "សៀវភៅ Spray Edge Edition នេះស្អាតប្លែកភ្នែកមែនទែន ចូលចិត្តខ្លាំងណាស់!" },
+      { reviewer: "ទេវី", rating: 5, comment: "រង់ចាំការបោះពុម្ភផ្សាយសៀវភៅនេះណាស់!" },
+      { reviewer: "វិសាល", rating: 5, comment: "Spray Edge ពណ៌ស្រស់ស្អាតនិងទាក់ទាញណាស់ ថែមទាំងកាតបាញ់ថ្នាំគែមទៀត។" },
+      { reviewer: "ស្រីនី", rating: 4, comment: "រឿង The Perfection នេះពិតជាល្អឥតខ្ចោះមែនទែន សរសើរការរចនាក្រប។" },
+      { reviewer: "សីហា", rating: 5, comment: "ស្នាដៃប្លែកគេសម្រាប់អ្នកចូលចិត្តសៀវភៅ Spray Edge ដ៏ប្រណីត!" }
+    ]
+  },
+  {
+    id: "ogre-faced-killer",
+    title: "ឃាតករមុខយក្ស (The Ogre-Faced Killer) - Spray Edge Edition",
+    author: "សំណេរ (Somnae)",
+    category: "Thriller",
+    rating: 5,
+    price: 11.99,
+    cover: "",
+    description: `[𝐒𝐏𝐑𝐀𝐘 𝐄𝐃𝐆𝐄 𝐄𝐃𝐈𝐓𝐈𝐎𝐍]\n\nបេីកកក់ទុកមុននៃសៀវភៅ «ឃាតករមុខយក្ស» ដែលមាន Spray គែម ✨\n\nទទួលបាន៖\n- សៀវភៅ «ឃាតករមុខយក្ស» គែមពណ៌ស្អាតប្រណីត\n- ថែមជូនស្នៀតសៀវភៅ (Bookmarks) ចំនួន ៨\n- ថែម Postcard ចំនួន ៦\n- ថែម Poster ចំនួន ១\n\n⚡ តម្លៃពិសេស៖ ៣៨,០០០៛ ($9.50)\n*ការបន្ថែមជូនផ្ទាំងរូបភាព និងស្នៀតសៀវភៅមានសម្រាប់តែការកក់ទុកមុនប៉ុណ្ណោះ!*`,
+    isTrending: true,
+    isHotPick: true,
+    publishedYear: 2025,
+    stock: 10,
+    reviews: [
+      { reviewer: "ពិសិដ្ឋ", rating: 5, comment: "ឃាតករមុខយក្ស មាន Spray Edge ថែមទាំង Bookmarks ដល់ទៅ ៨ ទៀត ពិតជាល្អណាស់!" },
+      { reviewer: "ម៉ាលីស", rating: 5, comment: "រចនាបថស្អាតប្លែកសក្តិសមនឹងការសន្សំទុក។" },
+      { reviewer: "ដារ៉ា", rating: 5, comment: "រឿងភ័យរន្ធត់បែបស៊ើបអង្កេត ការរចនាគែម Spray គឺស្អាតខ្លាំង។" },
+      { reviewer: "សុភ័ក្រ", rating: 4, comment: "សាច់រឿងល្អខ្លាំង ការវេចខ្ចប់ pre-order គឺល្អតម្លៃណាស់។" },
+      { reviewer: "Ratha Nit", rating: 5, comment: "ស្នាដៃសរសេររបស់សំណេរមិនដែលធ្វើឱ្យខកបំណងឡើយ!" }
+    ]
+  },
 
   // --- PRE-ORDER TITLES (NOT IN BROWSE CATALOG, ONLY IN PRE-ORDERS HUB) ---
   {
@@ -613,108 +739,6 @@ const INITIAL_BOOKS = [
     reviews: [
       { reviewer: "Tessa G.", rating: 5, comment: "Breathtaking dark fantasy. Absolutely gorgeous storytelling!" },
       { reviewer: "Jacob P.", rating: 5, comment: "I've been waiting for this print publication. A true masterpiece." }
-    ]
-  },
-  {
-    id: "the-book-of-grief",
-    title: "សៀវភៅលាក់ទុក្ខ - The Book of Grief",
-    author: "វាយោ (Vayo)",
-    category: "New Arrivals",
-    rating: 5,
-    price: 15.00,
-    cover: "assets/the_book_of_grief.jpg",
-    description: `“ពាក្យពេចន៍ដែលមិនបាននិយាយ នឹងក្លាយជាសំណេរដែលបានសរសេរទុក”\n\nទុក្ខសោកខ្លះ ចូលមកដោយមិនបង្ហាញនាមអ្វីឡើយ។ វាចូលមកជិតយើងយ៉ាងស្ងៀមស្ងាត់... នៅក្នុងចិត្ត... នៅក្នុងរូបកាយ... ក្នុងស្រមោលនៃការចងចាំ និងក្នុងចន្លោះរវាងអ្វីដែលបាននិយាយចេញមក និងអ្វីដែលត្រូវបានលាក់ទុក។ «សៀវភៅលាក់ទុក្ខ» បង្ហាញពីដំណើរនៃការផ្លាស់ប្ដូរ ការនឹកនាដ៏ស្ងប់ស្ងាត់ ក្ដីសង្ឃឹម និងការធ្វើដំណើរឆ្លងកាត់ពេលវេលានៃជីវិតរបស់មនុស្សម្នាក់ និងបុគ្គលម្នាក់ទៀតដែលយើងមិនអាចបកស្រាយបាន។`,
-    isTrending: true,
-    isHotPick: true,
-    publishedYear: 2026,
-    reviews: [
-      { reviewer: "ម៉ានី", rating: 5, comment: "រង់ចាំអានប្រលោមលោកថ្មីនេះណាស់! គ្រាន់តែឃើញក្របសៀវភៅក៏ទាក់ទាញបាត់ទៅហើយ។" },
-      { reviewer: "សុជាតា", rating: 5, comment: "ក្របសៀវភៅស្អាតខ្លាំងណាស់ ចូលចិត្តស្នាដៃរបស់អ្នកនិពន្ធវាយោ។" }
-    ]
-  },
-  {
-    id: "kingdom-of-suriya-part-1",
-    title: "អាណាចក្រសុរិយ៖ ភាគទី១ - Kingdom of Suriya: Part 1",
-    author: "សំណេរ (Somnae)",
-    category: "New Arrivals",
-    rating: 5,
-    price: 14.00,
-    cover: "assets/kingdom_of_suriya_part_1.jpg",
-    description: `✨𝐎𝐏𝐄𝐍 𝐅𝐎𝐑 𝐏𝐑𝐄-𝐎𝐑𝐃𝐄𝐑✨\n\n•• 𝐌𝐄𝐑𝐀 𝐄𝐃𝐈𝐓𝐈𝐎𝐍\n(Pre-Order ត្រឹមតែ៖ ៥៦,០០០៛ | $14.00) ✔️\n\nទទួលបាន៖\n- សៀវភៅ «អាណាចក្រសុរិយ៖ ភាគទី១» ប្រភេទក្របរឹង Hard Cover ចំនួន 1ក្បាល\n- ហត្ថលេខា អ្នកនិពន្ធ និង វិចិត្រករ\n- ស្នៀតសៀវភៅ ចំនួន៤\n- ស្នៀតសៀវភៅតួអង្គ Diecut ចំនួន៣\n- Postcard តួអង្គ ខ្នាត A5 ចំនួន៣\n- Postcard ពិសេស ខ្នាត A5 ចំនួន១\n- ផ្ទាំងផែនទីនៃអាណាចក្រសុរិយ ខ្នាត A3 ចំនួន១\n- ផ្ទាំងរូបភាពនៃរាជធានីសុរិយ ខ្នាត A3 ចំនួន១\n- ប្រអប់ការពារសៀវភៅ + ការវេចខ្ចប់ពិសេស\n\n*បិទកក់ត្រឹមថ្ងៃទី០៥ ខែមីនា ឆ្នាំ២០២៦*`,
-    isTrending: true,
-    isHotPick: true,
-    publishedYear: 2026,
-    reviews: [
-      { reviewer: "ដារ៉ា", rating: 5, comment: "សៀវភៅ Mera Edition នេះរៀបចំឡើងមកប្រណីតមែនទែន! ប្រអប់និងកញ្ចប់ពិសេសគឺស្អាតរកគាស់មិនបាន។" },
-      { reviewer: "ចាន់ថា", rating: 5, comment: "គំនូរនិងសាច់រឿងលំដាប់ខ្ពស់ខ្លាំងណាស់ គាំទ្រស្នាដៃខ្មែរ!" }
-    ]
-  },
-  {
-    id: "find-me-reminder",
-    title: "ចំណងដានជតា - Find me, reminder",
-    author: "នីម៉ូសា (Nimosa)",
-    category: "New Arrivals",
-    rating: 5,
-    price: 15.50,
-    cover: "assets/find_me_reminder.jpg",
-    description: `“យើងមិនមែនទេវតា យើងគ្រាន់តែជាកែសម្រួលអក្ខរាវិរុទ្ធតែប៉ុណ្ណោះ”\n\nនៅពេលសាកសពនិស្សិតម្នាក់ត្រូវបានគេរកឃើញនៅក្បែរមាត់ទ្វារបន្ទប់ស្នាក់នៅ បរិវេណសាកលវិទ្យាល័យទាំងមូលក៏ដួលរលំទៅក្នុងភាពភ័យខ្លាច។ មានតែ វីរ៉ា ម្នាក់គត់ដែលរក្សាភាពស្ងប់ស្ងាត់ហាក់គ្មានរឿងអ្វីកើតឡើង។ នៅពីក្រោយរបាំងមុខនៃភាពព្រងើយកន្តើយ នាងនឹងប្រមាញ់ការពិត បំពេញភារកិច្ចក្នុងការបោសសម្អាត រៀបចំសណ្ដាប់ធ្នាប់ និងបញ្ចប់រាល់ភាពចលាចលទាំងឡាយដោយដៃរបស់នាងផ្ទាល់。\n\nសៀវភៅប្រលោមលោកបែបអាថ៌កំបាំង អភិនីហារ - SchoolVibe\nបោះពុម្ពផ្សាយដោយ៖ សំណេរ\nអ្នកសរសេរ៖ នីម៉ូសា\nត្រួតពិនិត្យ និងសម្រួល៖ តាំង ហ៊ុយសេង`,
-    isTrending: true,
-    isHotPick: true,
-    publishedYear: 2026,
-    reviews: [
-      { reviewer: "វីរៈ", rating: 5, comment: "សាច់រឿងបែបស៊ើបអង្កេតអាថ៌កំបាំងក្នុងសាលា គួរឱ្យចាប់អារម្មណ៍ខ្លាំងណាស់!" },
-      { reviewer: "លីណា", rating: 4, comment: "ចូលចិត្តភាពរំភើបញាប់ញ័រនិងការស៊ើបអង្កេតក្នុងរឿងនេះ។" }
-    ]
-  },
-  {
-    id: "the-heartbroken-man",
-    title: "បុរសខកស្នេហ៍ - The Heartbroken Man",
-    author: "សំណេរ (Somnae)",
-    category: "New Arrivals",
-    rating: 5,
-    price: 16.00,
-    cover: "assets/the_heartbroken_man.jpg",
-    description: `🏆 OST. នៃសៀវភៅ «បុរសខកស្នេហ៍» - បទចម្រៀង «តួរងល្អឥតខ្ចោះ»\n\nការប្រកួតច្រៀងចម្រៀង Song Cover Contest៖\n🏆ជ័យលាភីលេខ១៖ ទទួលបានឈុត Gentleman Edition + សៀវភៅ៣០ក្បាល + Original CD\n🏆ជ័យលាភីលេខ២៖ ទទួលបានឈុត Gentleman Edition + សៀវភៅ១៥ក្បាល + Original CD\n🏆ជ័យលាភីលេខ៣៖ ទទួលបានឈុត Gentleman Edition + សៀវភៅ១០ក្បាល + Original CD\n\nលក្ខខណ្ឌក្នុងការចូលរួម៖\n- ត្រូវ Cover តាមបទចម្រៀង «តួរងល្អឥតខ្ចោះ»\n- រយៈពេលនៃវីដេអូ ចាប់ពី២នាទីឡេីងទៅ\n- Link ទៅកាន់បទចម្រៀង៖ https://youtu.be/KQpqOiwEYss?si=C0LmXnXCD4EGkxoS\n- ភ្លេងសុទ្ធ៖ https://youtu.be/BluACzrF7Xk?si=Ahbcp9K4mg6FwSSL\n- ត្រូវបង្ហោះវីដេអូចូលរួមនៅលេី Facebook ឬ TikTok ឬ YouTube\n- ភ្ជាប់ជាមួយ hashtag #SomnaeSongCoverContest #តួរងល្អឥតខ្ចោះ\n- ផុតកំណត់ត្រឹមថ្ងៃទី១៤ ខែកុម្ភៈ ឆ្នាំ២០២៦`,
-    isTrending: true,
-    isHotPick: true,
-    publishedYear: 2026,
-    reviews: [
-      { reviewer: "សុខា", rating: 5, comment: "បទចម្រៀងពិរោះខ្លាំងណាស់ ស្តាប់ហើយចង់អានសៀវភៅតែម្តង!" },
-      { reviewer: "ភារម្យ", rating: 5, comment: "ឈុត Gentleman Edition ពិតជាទាក់ទាញខ្លាំងណាស់ ចង់បាន CD ណាស់!" }
-    ]
-  },
-  {
-    id: "mok-neang",
-    title: "មុខនាង (Her Face) - Spray Edge Edition",
-    author: "សំណេរ (Somnae)",
-    category: "New Arrivals",
-    rating: 5,
-    price: 9.50,
-    cover: "assets/mok_neang.jpg",
-    description: `[𝐒𝐏𝐑𝐀𝐘 𝐄𝐃𝐆𝐄 𝐄𝐃𝐈𝐓𝐈𝐎𝐍]\n\nបេីកកក់ទុកមុននៃសៀវភៅ «មុខនាង» ដែលមាន Spray គែម ✨\n\nទទួលបាន៖\n- សៀវភៅ «មុខនាង» គែមពណ៌ស្អាតប្រណីត\n- ថែមជូនស្នៀតសៀវភៅ (Bookmarks) ចំនួន ៤\n- ថែម Postcard ចំនួន ៦\n- ថែម Poster ចំនួន ១\n\n⚡ តម្លៃពិសេស៖ ៣៨,០០០៛ ($9.50)\n*ការបន្ថែមជូនផ្ទាំងរូបភាព និងស្នៀតសៀវភៅមានសម្រាប់តែការកក់ទុកមុនប៉ុណ្ណោះ!*`,
-    isTrending: true,
-    isHotPick: true,
-    publishedYear: 2026,
-    reviews: [
-      { reviewer: "សាលី", rating: 5, comment: "សៀវភៅ Spray Edge Edition នេះស្អាតប្លែកភ្នែកមែនទែន ចូលចិត្តខ្លាំងណាស់!" },
-      { reviewer: "ទេវី", rating: 5, comment: "រង់ចាំការបោះពុម្ភផ្សាយសៀវភៅនេះណាស់!" }
-    ]
-  },
-  {
-    id: "ogre-faced-killer",
-    title: "ឃាតករមុខយក្ស (The Ogre-Faced Killer) - Spray Edge Edition",
-    author: "សំណេរ (Somnae)",
-    category: "New Arrivals",
-    rating: 5,
-    price: 9.50,
-    cover: "",
-    description: `[𝐒𝐏𝐑𝐀𝐘 𝐄𝐃𝐆𝐄 𝐄𝐃𝐈𝐓𝐈𝐎𝐍]\n\nបេីកកក់ទុកមុននៃសៀវភៅ «ឃាតករមុខយក្ស» ដែលមាន Spray គែម ✨\n\nទទួលបាន៖\n- សៀវភៅ «ឃាតករមុខយក្ស» គែមពណ៌ស្អាតប្រណីត\n- ថែមជូនស្នៀតសៀវភៅ (Bookmarks) ចំនួន ៨\n- ថែម Postcard ចំនួន ៦\n- ថែម Poster ចំនួន ១\n\n⚡ តម្លៃពិសេស៖ ៣៨,០០០៛ ($9.50)\n*ការបន្ថែមជូនផ្ទាំងរូបភាព និងស្នៀតសៀវភៅមានសម្រាប់តែការកក់ទុកមុនប៉ុណ្ណោះ!*`,
-    isTrending: true,
-    isHotPick: true,
-    publishedYear: 2026,
-    reviews: [
-      { reviewer: "ពិសិដ្ឋ", rating: 5, comment: "ឃាតករមុខយក្ស មាន Spray Edge ថែមទាំង Bookmarks ដល់ទៅ ៨ ទៀត ពិតជាល្អណាស់!" },
-      { reviewer: "ម៉ាលីស", rating: 5, comment: "រចនាបថស្អាតប្លែកសក្តិសមនឹងការសន្សំទុក។" }
     ]
   }
 ];

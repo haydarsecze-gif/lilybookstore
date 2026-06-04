@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadState = () => {
     try {
       // Clear old database cache on version upgrade to display new books cleanly
-      const CATALOG_VERSION = "v7";
+      const CATALOG_VERSION = "v8";
       const savedVersion = localStorage.getItem("lily_catalog_version");
       if (savedVersion !== CATALOG_VERSION) {
         localStorage.removeItem("lily_imported_books");
